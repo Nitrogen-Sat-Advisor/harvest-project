@@ -1,0 +1,52 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap');
+
+body {
+  font-family: "Roboto Light", Helvetica, Arial, sans-serif;
+}
+
+html, body, #root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+// helpers
+
+.fillContainer {
+  width: 100%;
+  height: 100%;
+  max-width: unset;
+  max-height: unset;
+}
+
+.left {
+  float: left;
+}
+
+.right {
+  float: right;
+}
+
+.noPadding {
+  padding: 0 !important;
+}
+
+.noMargin {
+  margin: 0 !important;
+}
+
+.actionIcon {
+  cursor: pointer;
+}
+
+// MUI overrides
+.MuiButton-root {
+  box-shadow: none !important;
+  border-radius: 2px !important;
+}
+
+[class^="MuiDivider"] {
+  margin-bottom: 10px !important;
+  margin-top: 10px !important;
+}
