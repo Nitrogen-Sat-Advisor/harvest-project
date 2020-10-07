@@ -13,7 +13,10 @@ import Typography from '@material-ui/core/Typography';
 import background from '../../images/background.jpg';
 import logoNAdvisor from '../../images/logo_n_advisor.png';
 import logoSatViewer from '../../images/logo_sat_viewer.png';
-import { footerHeight, footerStyle, headerHeight } from '../Layouts/styles';
+import { headerHeight } from '../Layouts/MainLayout';
+import { palette } from '../../theme';
+
+const footerHeight = '120px';
 
 const useStyle = makeStyles((theme) => ({
     main: {
@@ -21,7 +24,15 @@ const useStyle = makeStyles((theme) => ({
         background: `linear-gradient(0deg, rgba(0,0,0,0.5) 0%, rgba(255,255,255,0.5) 100%), url(${background}) no-repeat center/cover`,
         margin: 0
     },
-    footer: footerStyle,
+    footer: {
+        'height': footerHeight,
+        'background': palette.secondary.main,
+        'color': '#fff',
+
+        '& h5': {
+            fontSize: '1.75rem'
+        }
+    },
     footerText: {
         'maxWidth': 365,
         'marginTop': 20,

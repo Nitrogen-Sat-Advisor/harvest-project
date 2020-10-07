@@ -55,3 +55,13 @@ declare module '*.module.less' {
     const classes: { readonly [key: string]: string };
     export default classes;
 }
+
+declare module '*.json' {
+    const src: string;
+    export default src;
+}
+
+declare module '*.geojson' {
+    const src: string;
+    export default src;
+}

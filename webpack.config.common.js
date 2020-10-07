@@ -11,6 +11,7 @@ module.exports = {
 
     entry: {
         styles: './src/styles/main.less',
+        olStyles: 'ol/ol.css',
         polyfill: './src/polyfill.ts',
         main: './src/index.tsx'
     },
@@ -63,7 +64,7 @@ module.exports = {
             },
             {
                 type: 'javascript/auto',
-                test: /\.json$/,
+                test: /\.(geo)?json$/,
                 use: [
                     {
                         loader: 'file-loader',

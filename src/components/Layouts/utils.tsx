@@ -1,5 +1,6 @@
 import React from 'react';
-import { RouteComponentProps } from 'react-router-dom';
+
+import type { RouteComponentProps } from 'react-router-dom';
 
 /**
  * A higher-order component that wraps a component with the given Layout

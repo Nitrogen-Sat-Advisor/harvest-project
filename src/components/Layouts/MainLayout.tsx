@@ -4,25 +4,39 @@ import AppBar from '@material-ui/core/AppBar';
 import Grid from '@material-ui/core/Grid';
 import Toolbar from '@material-ui/core/Toolbar';
 
-import { headerHeight, headerStyle } from './styles';
+export const headerHeight = '75px';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
     container: {
         flexGrow: 1
     },
-    header: headerStyle,
+    header: {
+        'height': headerHeight,
+        'minHeight': headerHeight,
+        'background': theme.palette.secondary.light,
+        'color': theme.palette.secondary.contrastText,
+        'textDecoration': 'none',
+
+        '& a': {
+            margin: 5
+        },
+
+        '& h5': {
+            fontSize: '1.75rem'
+        }
+    },
     main: {
         position: 'relative',
         height: `calc(100vh - ${headerHeight})`
     }
-});
+}));
 
-type Props = {
+interface Props {
     children?: React.ReactNode;
     header: React.ReactNode;
-};
+}
 
-const Layout: React.FC<Props> = ({ children, header }: Props) => {
+const Layout: React.FC<Props> = ({ children = undefined, header }: Props) => {
     const classes = useStyles();
 
     return (
@@ -38,10 +52,6 @@ const Layout: React.FC<Props> = ({ children, header }: Props) => {
             </Grid>
         </Grid>
     );
-};
-
-Layout.defaultProps = {
-    children: undefined
 };
 
 export default Layout;
