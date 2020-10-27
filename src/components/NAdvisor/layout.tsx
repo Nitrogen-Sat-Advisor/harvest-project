@@ -26,7 +26,7 @@ export const Header = (): JSX.Element => {
 
     return (
         <Box display="flex" justifyItems="center" alignContent="center" alignItems="center" flexGrow={1}>
-            <IconButton edge="start" component={Link} to="/">
+            <IconButton edge="start" component={Link} to={process.env.PUBLIC_PATH}>
                 <HomeIcon />
             </IconButton>
             <Avatar src={logoNAdvisor} variant="square" />

@@ -10,7 +10,7 @@ ReactDOM.render(
     <Router>
         <ThemeProvider theme={theme}>
             {Object.entries(routes).map(([path, props]) => (
-                <Route key={path} path={path} {...props} />
+                <Route key={path} path={`${process.env.PUBLIC_PATH}${path}`} {...props} />
             ))}
         </ThemeProvider>
     </Router>,

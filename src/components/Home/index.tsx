@@ -159,7 +159,7 @@ const Home: React.FC = () => {
                         <CardActions className={classes.toolActions}>
                             <Button
                                 component={Link}
-                                to="/satellite-viewer"
+                                to="satellite-viewer"
                                 variant="contained"
                                 color="primary"
                                 fullWidth

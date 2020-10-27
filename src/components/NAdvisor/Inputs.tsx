@@ -95,6 +95,7 @@ const useStyle = makeStyles((theme) => ({
 }));
 
 interface Props {
+    areInputsValid: boolean;
     handleCalculate: () => void;
 }
 
@@ -325,7 +326,7 @@ const Inputs = (props: Props): JSX.Element => {
                             color="primary"
                             fullWidth
                             size="large"
-                            disabled={!inputs.isValid}
+                            disabled={!props.areInputsValid}
                             onClick={props.handleCalculate}
                         >
                             Calculate

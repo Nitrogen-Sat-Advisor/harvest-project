@@ -12,7 +12,8 @@ import countiesGeoJSON from '../../files/counties.geojson';
 import districtsGeoJSON from '../../files/districts.geojson';
 
 // N Advisor config
-export const API_ENDPOINT = process.env.API_ENDPOINT || '';
+export const DATAWOLF_CONFIG = process.env.DATAWOLF_CONFIG || {};
+console.warn(DATAWOLF_CONFIG);
 
 export const ROTATIONS = {
     cc: 'Corn Following Corn',
@@ -28,8 +29,7 @@ export const initialInputs: NAdvisor.InputsType = {
     rotation: 'cc',
     nFertilizer: 'UAN',
     nPrice: 0,
-    cornPrice: 0,
-    isValid: false
+    cornPrice: 0
 };
 
 // N Advisor map config

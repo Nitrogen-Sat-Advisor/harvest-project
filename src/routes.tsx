@@ -12,12 +12,12 @@ import SatViewer from './components/SatViewer';
 import { Header as SatViewerHeader } from './components/SatViewer/layout';
 
 const routes: { [key: string]: RouteProps } = {
-    '/': {
+    '': {
         exact: true,
         component: withLayout(MainLayout, Home, { header: <HomeHeader /> })
     },
-    '/nitrogen-advisor': { exact: true, component: withLayout(MainLayout, NAdvisor, { header: <NAdvisorHeader /> }) },
-    '/satellite-viewer': { exact: true, component: withLayout(MainLayout, SatViewer, { header: <SatViewerHeader /> }) }
+    'nitrogen-advisor': { exact: true, component: withLayout(MainLayout, NAdvisor, { header: <NAdvisorHeader /> }) },
+    'satellite-viewer': { exact: true, component: withLayout(MainLayout, SatViewer, { header: <SatViewerHeader /> }) }
 };
 
 export default routes;

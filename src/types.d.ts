@@ -68,6 +68,24 @@ declare namespace NAdvisor {
 
     import { N_FERTILIZER } from './components/NAdvisor/config';
 
+    interface DatawolfWorkflowConfig {
+        url: string;
+        workflowId: string;
+        params: {
+            [k: keyof InputsType]: string;
+        };
+    }
+
+    interface DatawolfParams {
+        [k: string]: string | number;
+    }
+
+    interface DatawolfRequestConfig {
+        url: string;
+        workflowId: string;
+        params: DatawolfParams;
+    }
+
     interface UpdateDistrictAction {
         type: 'district';
         value: string;
@@ -103,10 +121,9 @@ declare namespace NAdvisor {
     interface InputsType {
         district: string;
         rotation: 'cc' | 'cs';
-        nFertilizer: keyof typeof N_FERTILIZER;
+        nFertilizer: string;
         nPrice: number;
         cornPrice: number;
-        isValid: boolean;
     }
 
     interface InputsContextType {
@@ -134,7 +151,8 @@ declare namespace NAdvisor {
 declare namespace NodeJS {
     interface ProcessEnv {
         readonly NODE_ENV: 'development' | 'production' | 'test';
-        readonly PUBLIC_URL: string;
+        readonly PUBLIC_PATH: string;
+        readonly DATAWOLF_CONFIG: string;
     }
 }
 

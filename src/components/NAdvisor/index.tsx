@@ -2,6 +2,7 @@ import React from 'react';
 import axios from 'axios';
 
 import resultsFixture from '../../fixtures/results.json';
+import { createDatawolfRequestBody } from '../../utils/datawolf';
 import { LayoutStateContext } from '../Layouts/MainLayout';
 import Inputs from './Inputs';
 import Results from './Results';
@@ -12,8 +13,7 @@ const inputsReducer = (
     action: NAdvisor.InputAction
 ): NAdvisor.InputsType => ({
     ...state,
-    [action.type]: action.value,
-    isValid: !!(action.value && Object.entries(state).every(([k, v]) => k === 'isValid' || k === action.type || v))
+    [action.type]: action.value
 });
 
 export const InputsContext = React.createContext<NAdvisor.InputsContextType>({} as NAdvisor.InputsContextType);
@@ -23,21 +23,26 @@ const Index = (): JSX.Element => {
 
     const [inputs, inputsDispatch] = React.useReducer(inputsReducer, initialInputs);
 
+    const areInputsValid = Object.values(inputs).every((v) => v);
+
     const [activeView, updateActiveView] = React.useState<'inputs' | 'results'>('inputs');
 
     const [results, updateResults] = React.useState<NAdvisor.ResultsType>();
 
     const handleCalculate = () => {
-        if (inputs.isValid) {
+        if (areInputsValid) {
             layoutStateDispatch({ type: 'isLoading', value: true });
+            console.warn(createDatawolfRequestBody(inputs));
             axios
                 .get((resultsFixture as unknown) as string)
                 .then((response) => {
                     updateResults(response.data as NAdvisor.ResultsType);
                     updateActiveView('results');
-                    layoutStateDispatch({ type: 'isLoading', value: false });
                 })
-                .catch(console.error);
+                .catch(console.error)
+                .finally(() => {
+                    layoutStateDispatch({ type: 'isLoading', value: false });
+                });
         }
     };
 
@@ -46,7 +51,7 @@ const Index = (): JSX.Element => {
             {activeView === 'results' && results ? (
                 <Results results={results} handleBack={() => updateActiveView('inputs')} />
             ) : (
-                <Inputs handleCalculate={handleCalculate} />
+                <Inputs areInputsValid={areInputsValid} handleCalculate={handleCalculate} />
             )}
         </InputsContext.Provider>
     );

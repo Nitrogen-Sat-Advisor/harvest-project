@@ -9,6 +9,8 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 module.exports = {
     target: 'web',
 
+    context: __dirname,
+
     entry: {
         styles: './src/styles/main.less',
         olStyles: 'ol/ol.css',
@@ -18,7 +20,7 @@ module.exports = {
 
     output: {
         path: path.resolve('./build'),
-        publicPath: '/',
+        publicPath: process.env.PUBLIC_PATH || '/',
         filename: 'js/[name]-[hash].js',
         crossOriginLoading: 'anonymous'
     },
@@ -115,7 +117,8 @@ module.exports = {
             template: path.resolve('./src/index.html')
         }),
         new Webpack.DefinePlugin({
-            'process.env.API_ENDPOINT': JSON.stringify(process.env.API_ENDPOINT || '/api')
+            'process.env.PUBLIC_PATH': JSON.stringify(process.env.PUBLIC_PATH || '/'),
+            'process.env.DATAWOLF_CONFIG': JSON.stringify(process.env.DATAWOLF_CONFIG || {})
         }),
         new FaviconsWebpackPlugin({
             logo: './src/images/favicon.png',
