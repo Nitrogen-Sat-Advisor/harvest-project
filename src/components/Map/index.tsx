@@ -5,6 +5,7 @@ import { Extent } from 'ol/extent';
 import Layer from 'ol/layer/Layer';
 
 import type { MapBrowserEvent } from 'ol';
+import type { DefaultsOptions } from 'ol/control';
 import type { Coordinate } from 'ol/coordinate';
 import type { ViewOptions } from 'ol/View';
 
@@ -18,6 +19,7 @@ interface Props {
     minZoom?: number;
     maxZoom?: number;
     extent?: Extent;
+    defaultControlsOptions?: DefaultsOptions;
     controls?: Control[];
     layers?: Array<Layer>;
     updateMap?: (map: OLMap) => void;
@@ -62,6 +64,7 @@ const Map = (props: Props): JSX.Element => {
         minZoom = 0,
         maxZoom = 14,
         extent = null,
+        defaultControlsOptions = {},
         controls = [],
         layers = [],
         updateMap = null,
@@ -89,7 +92,7 @@ const Map = (props: Props): JSX.Element => {
                 target: mapContainer.current,
                 view: new View(viewOptions),
                 layers,
-                controls: defaultControls().extend(controls)
+                controls: defaultControls(defaultControlsOptions).extend(controls)
             });
 
             mapRef.current = map;

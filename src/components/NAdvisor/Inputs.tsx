@@ -18,18 +18,18 @@ import type { MapBrowserEvent } from 'ol';
 
 import type { FeatureLike as FeatureType } from 'ol/Feature';
 import type { Layer as LayerType, VectorTile as VectorTileType } from 'ol/layer';
-import { LAYERS, MAP_CENTER, MAP_EXTENT, N_FERTILIZER, STYLES } from '../../config';
+import { MAP_CENTER, N_FERTILIZER, ROTATIONS, STYLES, getBasemap, getCountiesLayer, getDistrictsLayer } from './config';
 
 import Map from '../Map';
-import { InputsContext } from './reducer';
-import type { InputsContextType, InputsType } from './reducer';
+import { InputsContext } from './index';
 
 const useStyle = makeStyles((theme) => ({
     container: {
         height: '100%'
     },
     containerItem: {
-        'padding': `${theme.spacing(3)}px !important`,
+        'padding': theme.spacing(2),
+        'paddingRight': 0,
         'display': 'flex',
         '& > *': {
             flexGrow: 1,
@@ -71,7 +71,7 @@ const useStyle = makeStyles((theme) => ({
         marginBottom: theme.spacing(2)
     },
     mapContainer: {
-        height: '75%',
+        flexGrow: 1,
         marginTop: theme.spacing(2)
     },
     rotationButtonGroup: {
@@ -95,15 +95,19 @@ const useStyle = makeStyles((theme) => ({
 }));
 
 interface Props {
-    handleRun: () => void;
+    handleCalculate: () => void;
 }
+
+const basemapLayer = getBasemap();
+const countiesLayer = getCountiesLayer();
+const districtsLayer = getDistrictsLayer();
 
 const Inputs = (props: Props): JSX.Element => {
     const classes = useStyle();
 
-    const { inputs, inputsDispatch } = React.useContext<InputsContextType>(InputsContext);
+    const { inputs, inputsDispatch } = React.useContext<NAdvisor.InputsContextType>(InputsContext);
 
-    const inputsRef = React.useRef<{ previous: InputsType; current: InputsType }>({
+    const inputsRef = React.useRef<{ previous: NAdvisor.InputsType; current: NAdvisor.InputsType }>({
         previous: inputs,
         current: inputs
     });
@@ -113,7 +117,7 @@ const Inputs = (props: Props): JSX.Element => {
 
         if (previous.district !== inputs.district) {
             // Update styling of districts
-            LAYERS.districts.setStyle(STYLES.districts(inputs.district));
+            districtsLayer.setStyle(STYLES.districts(inputs.district));
         }
 
         inputsRef.current = {
@@ -146,20 +150,17 @@ const Inputs = (props: Props): JSX.Element => {
     );
 
     return (
-        <Grid className={classes.container} container spacing={2}>
+        <Grid className={classes.container} container>
             <Grid
                 className={`${classes.introContainer} ${classes.containerItem}`}
                 container
                 item
                 xs={4}
                 direction="column"
-                component={Paper}
-                square
-                elevation={0}
             >
                 <Box className={classes.intro}>
                     <Box className={classes.header} display="flex">
-                        <Typography variant="h4">Get Started Here!</Typography>
+                        <Typography variant="h5">Get Started Here!</Typography>
                         <ArrowForwardIcon fontSize="large" />
                     </Box>
                     <Container>
@@ -177,46 +178,46 @@ const Inputs = (props: Props): JSX.Element => {
             </Grid>
             <Grid className={classes.containerItem} item xs={4}>
                 <Paper square>
-                    <Box display="flex">
-                        <Typography className={`${classes.header} ${classes.step}`} variant="h4">
-                            1
-                        </Typography>
-                        <Typography variant="h6">Select the district in which your farm is located.</Typography>
+                    <Box className="fillContainer" display="flex" flexDirection="column">
+                        <Box display="flex">
+                            <Typography className={`${classes.header} ${classes.step}`} variant="h4">
+                                1
+                            </Typography>
+                            <Typography variant="h6">Select the district in which your farm is located.</Typography>
+                        </Box>
+
+                        <FormControl fullWidth variant="outlined">
+                            <Typography className={classes.inputLabel} variant="caption">
+                                Select A District
+                            </Typography>
+                            <Select
+                                value={inputs.district}
+                                onChange={({ target: { value } }) =>
+                                    inputsDispatch({
+                                        type: 'district',
+                                        value: (value || '') as string
+                                    })
+                                }
+                            >
+                                <MenuItem value="">---</MenuItem>
+                                {['1', '2', '3', '4', '5', '6', '7', '8', '9'].map((district) => (
+                                    <MenuItem key={district} value={district}>
+                                        District {district}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+
+                        <Container className={classes.mapContainer} disableGutters>
+                            <Map
+                                className="fillContainer"
+                                zoom={6.5}
+                                center={MAP_CENTER}
+                                layers={[basemapLayer, countiesLayer, districtsLayer]}
+                                events={{ click: handleMapClick }}
+                            />
+                        </Container>
                     </Box>
-
-                    <FormControl fullWidth variant="outlined">
-                        <Typography className={classes.inputLabel} variant="caption">
-                            Select A District
-                        </Typography>
-                        <Select
-                            value={inputs.district}
-                            onChange={({ target: { value } }) =>
-                                inputsDispatch({
-                                    type: 'district',
-                                    value: (value || '') as string
-                                })
-                            }
-                        >
-                            <MenuItem value="">---</MenuItem>
-                            {['1', '2', '3', '4', '5', '6', '7', '8', '9'].map((district) => (
-                                <MenuItem key={district} value={district}>
-                                    District {district}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-
-                    <Container className={classes.mapContainer} disableGutters>
-                        <Map
-                            className="fillContainer"
-                            zoom={4}
-                            minZoom={0}
-                            center={MAP_CENTER}
-                            extent={MAP_EXTENT}
-                            layers={Object.values(LAYERS)}
-                            events={{ click: handleMapClick }}
-                        />
-                    </Container>
                 </Paper>
             </Grid>
             <Grid className={`${classes.containerItem} ${classes.lastColumn}`} item xs={4}>
@@ -243,10 +244,10 @@ const Inputs = (props: Props): JSX.Element => {
                         }}
                     >
                         <ToggleButton classes={{ selected: classes.rotationButtonSelected }} value="cc">
-                            Corn Following Corn
+                            {ROTATIONS.cc}
                         </ToggleButton>
                         <ToggleButton classes={{ selected: classes.rotationButtonSelected }} value="cs">
-                            Corn Following Soybean
+                            {ROTATIONS.cs}
                         </ToggleButton>
                     </ToggleButtonGroup>
 
@@ -263,7 +264,6 @@ const Inputs = (props: Props): JSX.Element => {
                                 })
                             }
                         >
-                            <MenuItem value="">---</MenuItem>
                             {Object.entries(N_FERTILIZER).map(([value, label]) => (
                                 <MenuItem key={value} value={value}>
                                     {label}
@@ -272,7 +272,7 @@ const Inputs = (props: Props): JSX.Element => {
                         </Select>
                     </FormControl>
 
-                    <FormControl variant="outlined">
+                    <FormControl variant="outlined" fullWidth>
                         <Typography className={classes.inputLabel} variant="caption">
                             Nitrogen Price ($/lb N)
                         </Typography>
@@ -291,7 +291,7 @@ const Inputs = (props: Props): JSX.Element => {
                         />
                     </FormControl>
 
-                    <FormControl variant="outlined">
+                    <FormControl variant="outlined" fullWidth>
                         <Typography className={classes.inputLabel} variant="caption">
                             Corn Price ($/bu)
                         </Typography>
@@ -320,7 +320,14 @@ const Inputs = (props: Props): JSX.Element => {
                     </Box>
 
                     <Box display="flex">
-                        <Button variant="contained" color="primary" fullWidth size="large" onClick={props.handleRun}>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            fullWidth
+                            size="large"
+                            disabled={!inputs.isValid}
+                            onClick={props.handleCalculate}
+                        >
                             Calculate
                         </Button>
                     </Box>

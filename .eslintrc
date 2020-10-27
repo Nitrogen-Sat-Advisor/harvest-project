@@ -95,12 +95,7 @@
                 ]
             }
         ],
-        "no-mixed-operators": [
-            "error",
-            {
-                "allowSamePrecedence": true
-            }
-        ],
+        "no-mixed-operators": "error",
         "no-multi-spaces": [
             "error",
             {

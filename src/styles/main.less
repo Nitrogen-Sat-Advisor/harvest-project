@@ -32,6 +32,10 @@ html, body, #root {
   float: right;
 }
 
+.rightText{
+  text-align: right;
+}
+
 .noPadding {
   padding: 0 !important;
 }
@@ -42,6 +46,34 @@ html, body, #root {
 
 .actionIcon {
   cursor: pointer;
+}
+
+.yellowHighlight {
+  background: linear-gradient(45deg, #F9E776 22.5%, #f1da6d 22.5%, #f1da6d 27.5%, #F9E776 27.5%, #F9E776 72.5%, #f1da6d 72.5%, #f1da6d 77.5%, #F9E776 77.5%);
+}
+
+// Plots
+.xTitle, .yTitle {
+  color: #000;
+  font-size: 14px;
+}
+
+.grid g.tick {
+  line {
+    stroke: #DFE2E4;
+    stroke-opacity: 0.7;
+    shape-rendering: crispEdges;
+  }
+
+  &:nth-child(2), &:last-child {
+    line {
+      stroke: #455A64;
+    }
+  }
+}
+
+.grid path {
+  stroke-width: 0;
 }
 
 // MUI overrides
