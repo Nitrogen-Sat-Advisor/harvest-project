@@ -66,12 +66,14 @@ declare namespace Layout {
 declare namespace NAdvisor {
     import React from 'react';
 
-    import { N_FERTILIZER } from './components/NAdvisor/config';
-
     interface DatawolfWorkflowConfig {
         url: string;
         workflowId: string;
-        params: {
+        creatorId: string;
+        xUserInfo: string;
+        stepId: string;
+        resultsDatasetId: string;
+        parameters: {
             [k: keyof InputsType]: string;
         };
     }
@@ -80,15 +82,16 @@ declare namespace NAdvisor {
         [k: string]: string | number;
     }
 
-    interface DatawolfRequestConfig {
-        url: string;
+    interface DatawolfExecutionPayload {
         workflowId: string;
-        params: DatawolfParams;
+        creatorId: string;
+        title: string;
+        parameters: DatawolfParams;
     }
 
     interface UpdateDistrictAction {
         type: 'district';
-        value: string;
+        value: number;
     }
 
     interface UpdateRotationAction {
@@ -98,7 +101,7 @@ declare namespace NAdvisor {
 
     interface UpdateNFertilizerAction {
         type: 'nFertilizer';
-        value: keyof typeof N_FERTILIZER;
+        value: number;
     }
 
     interface UpdateNPriceAction {
@@ -119,9 +122,9 @@ declare namespace NAdvisor {
         | UpdateCornPriceAction;
 
     interface InputsType {
-        district: string;
+        district: number;
         rotation: 'cc' | 'cs';
-        nFertilizer: string;
+        nFertilizer: number;
         nPrice: number;
         cornPrice: number;
     }
@@ -152,7 +155,6 @@ declare namespace NodeJS {
     interface ProcessEnv {
         readonly NODE_ENV: 'development' | 'production' | 'test';
         readonly PUBLIC_PATH: string;
-        readonly DATAWOLF_CONFIG: string;
     }
 }
 
@@ -189,9 +191,7 @@ declare module '*.webp' {
 declare module '*.svg' {
     import * as React from 'react';
 
-    export const ReactComponent: React.FunctionComponent<React.SVGProps<
-        SVGSVGElement
-    >>;
+    export const ReactComponent: React.FunctionComponent<React.SVGProps<SVGSVGElement>>;
 
     const src: string;
     export default src;

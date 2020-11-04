@@ -1,0 +1,15 @@
+{
+    "url": "http://localhost:8888/datawolf",
+    "workflowId": "03e36b31-48a2-4841-ac2e-948ffab02f0c",
+    "creatorId": "30bd4c9a-43f3-4124-8ce4-099dcb92bc4c",
+    "xUserInfo": "eyJlbWFpbCI6ImthdmVoQGlsbGlub2lzLmVkdSJ9",
+    "stepId": "93a7de26-47ae-475a-d1b9-0f6176095707",
+    "resultsDatasetId": "6e320fd8-de58-4605-d731-4e35cc8de8c1",
+    "parameters": {
+        "district": "7b344edb-fc5c-41be-bbcd-09ffc2a6832c",
+        "cornPrice": "6919ef5e-1171-4ad4-b013-ee313f9bfb18",
+        "nPrice": "2b164105-c2cf-44e2-b9b2-3574758bf189",
+        "rotation": "730c0ff7-6875-43b7-df2a-3b0b5ae27c69",
+        "nFertilizer": "ab3a21e3-f27b-461b-b3c8-1f40ccc0efe4"
+    }
+}

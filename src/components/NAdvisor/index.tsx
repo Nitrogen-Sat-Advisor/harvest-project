@@ -1,12 +1,11 @@
 import React from 'react';
 import axios from 'axios';
 
-import resultsFixture from '../../fixtures/results.json';
-import { createDatawolfRequestBody } from '../../utils/datawolf';
 import { LayoutStateContext } from '../Layouts/MainLayout';
 import Inputs from './Inputs';
 import Results from './Results';
-import { initialInputs } from './config';
+import { createDatawolfRequestBody, getResults } from './datawolf';
+import { datawolfConfig, initialInputs } from './config';
 
 const inputsReducer = (
     state: NAdvisor.InputsType = initialInputs,
@@ -32,15 +31,23 @@ const Index = (): JSX.Element => {
     const handleCalculate = () => {
         if (areInputsValid) {
             layoutStateDispatch({ type: 'isLoading', value: true });
-            console.warn(createDatawolfRequestBody(inputs));
             axios
-                .get((resultsFixture as unknown) as string)
-                .then((response) => {
-                    updateResults(response.data as NAdvisor.ResultsType);
-                    updateActiveView('results');
+                .post(`${datawolfConfig.url}/executions`, createDatawolfRequestBody(inputs))
+                .then(({ data: executionGUID }) => {
+                    getResults(
+                        executionGUID,
+                        (data) => {
+                            updateResults(data);
+                            updateActiveView('results');
+                            layoutStateDispatch({ type: 'isLoading', value: false });
+                        },
+                        () => {
+                            layoutStateDispatch({ type: 'isLoading', value: false });
+                        }
+                    );
                 })
-                .catch(console.error)
-                .finally(() => {
+                .catch((e) => {
+                    console.error(`Could not start execution: ${e}`);
                     layoutStateDispatch({ type: 'isLoading', value: false });
                 });
         }

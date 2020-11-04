@@ -66,7 +66,7 @@ module.exports = {
             },
             {
                 type: 'javascript/auto',
-                test: /\.(geo)?json$/,
+                test: /\.geojson$/,
                 use: [
                     {
                         loader: 'file-loader',
@@ -117,8 +117,7 @@ module.exports = {
             template: path.resolve('./src/index.html')
         }),
         new Webpack.DefinePlugin({
-            'process.env.PUBLIC_PATH': JSON.stringify(process.env.PUBLIC_PATH || '/'),
-            'process.env.DATAWOLF_CONFIG': JSON.stringify(process.env.DATAWOLF_CONFIG || {})
+            'process.env.PUBLIC_PATH': JSON.stringify(process.env.PUBLIC_PATH || '/')
         }),
         new FaviconsWebpackPlugin({
             logo: './src/images/favicon.png',

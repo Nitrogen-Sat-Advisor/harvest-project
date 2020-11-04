@@ -11,13 +11,13 @@ import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import ToggleButton from '@material-ui/lab/ToggleButton';
-
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
-import type { MapBrowserEvent } from 'ol';
 
+import type { MapBrowserEvent } from 'ol';
 import type { FeatureLike as FeatureType } from 'ol/Feature';
 import type { Layer as LayerType, VectorTile as VectorTileType } from 'ol/layer';
+
 import { MAP_CENTER, N_FERTILIZER, ROTATIONS, STYLES, getBasemap, getCountiesLayer, getDistrictsLayer } from './config';
 
 import Map from '../Map';
@@ -29,7 +29,6 @@ const useStyle = makeStyles((theme) => ({
     },
     containerItem: {
         'padding': theme.spacing(2),
-        'paddingRight': 0,
         'display': 'flex',
         '& > *': {
             flexGrow: 1,
@@ -118,7 +117,7 @@ const Inputs = (props: Props): JSX.Element => {
 
         if (previous.district !== inputs.district) {
             // Update styling of districts
-            districtsLayer.setStyle(STYLES.districts(inputs.district));
+            districtsLayer.setStyle(STYLES.districts(inputs.district.toString()));
         }
 
         inputsRef.current = {
@@ -142,7 +141,7 @@ const Inputs = (props: Props): JSX.Element => {
 
                 if (currentInputs.district !== clickedDistrict) {
                     // Select the new district
-                    inputsDispatch({ type: 'district', value: clickedDistrict });
+                    inputsDispatch({ type: 'district', value: parseInt(clickedDistrict, 10) });
                     (clickedLayer as VectorTileType).setStyle(STYLES.districts(clickedDistrict));
                 }
             }
@@ -187,7 +186,7 @@ const Inputs = (props: Props): JSX.Element => {
                             <Typography variant="h6">Select the district in which your farm is located.</Typography>
                         </Box>
 
-                        <FormControl fullWidth variant="outlined">
+                        <FormControl fullWidth variant="outlined" size="small">
                             <Typography className={classes.inputLabel} variant="caption">
                                 Select A District
                             </Typography>
@@ -196,12 +195,12 @@ const Inputs = (props: Props): JSX.Element => {
                                 onChange={({ target: { value } }) =>
                                     inputsDispatch({
                                         type: 'district',
-                                        value: (value || '') as string
+                                        value: (value || 0) as number
                                     })
                                 }
                             >
-                                <MenuItem value="">---</MenuItem>
-                                {['1', '2', '3', '4', '5', '6', '7', '8', '9'].map((district) => (
+                                <MenuItem value={0}>---</MenuItem>
+                                {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((district) => (
                                     <MenuItem key={district} value={district}>
                                         District {district}
                                     </MenuItem>
@@ -252,7 +251,7 @@ const Inputs = (props: Props): JSX.Element => {
                         </ToggleButton>
                     </ToggleButtonGroup>
 
-                    <FormControl fullWidth variant="outlined">
+                    <FormControl fullWidth variant="outlined" size="small">
                         <Typography className={classes.inputLabel} variant="caption">
                             N Fertilizer
                         </Typography>
@@ -261,7 +260,7 @@ const Inputs = (props: Props): JSX.Element => {
                             onChange={({ target: { value } }) =>
                                 inputsDispatch({
                                     type: 'nFertilizer',
-                                    value: (value || '') as keyof typeof N_FERTILIZER
+                                    value: parseInt(value as string, 10)
                                 })
                             }
                         >

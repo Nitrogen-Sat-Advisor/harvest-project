@@ -286,7 +286,7 @@ const Results = (props: Props): JSX.Element => {
     return (
         <Grid className={classes.container} container>
             <Grid className={classes.containerItem} container item xs={4}>
-                <Paper className={classes.sidebarContainer} square elevation={1}>
+                <Paper className={`${classes.sidebarContainer} fullwidth`} square elevation={1}>
                     <Grid className={classes.sidebarHeader} container item>
                         <Button
                             variant="contained"

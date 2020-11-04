@@ -11,9 +11,9 @@ import type { FeatureLike as FeatureType } from 'ol/Feature';
 import countiesGeoJSON from '../../files/counties.geojson';
 import districtsGeoJSON from '../../files/districts.geojson';
 
-// N Advisor config
-export const DATAWOLF_CONFIG = process.env.DATAWOLF_CONFIG || {};
-console.warn(DATAWOLF_CONFIG);
+import DATAWOLF_CONFIG from './datawolf_config.json';
+
+export const datawolfConfig = DATAWOLF_CONFIG as NAdvisor.DatawolfWorkflowConfig;
 
 export const ROTATIONS = {
     cc: 'Corn Following Corn',
@@ -21,13 +21,16 @@ export const ROTATIONS = {
 };
 
 export const N_FERTILIZER = {
-    UAN: 'UAN (28%)'
+    1: 'Anhydrous Ammonia (82%)',
+    2: 'UAN (28%)',
+    3: 'UAN (32%)',
+    4: 'UAN (45%)'
 };
 
 export const initialInputs: NAdvisor.InputsType = {
-    district: '',
+    district: 0,
     rotation: 'cc',
-    nFertilizer: 'UAN',
+    nFertilizer: 1,
     nPrice: 0,
     cornPrice: 0
 };

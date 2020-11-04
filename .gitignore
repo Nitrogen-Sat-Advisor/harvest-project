@@ -1,4 +1,5 @@
 /node_modules
-
 /build
+
+datawolf_config.json
 *.log
