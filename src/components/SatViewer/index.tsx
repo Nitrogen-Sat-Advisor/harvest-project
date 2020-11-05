@@ -1,4 +1,5 @@
 import React from 'react';
+import { Map as OLMap } from 'ol';
 import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
@@ -16,7 +17,8 @@ import Typography from '@material-ui/core/Typography';
 import AddIcon from '@material-ui/icons/Add';
 
 import Map from '../Map';
-import { MAP_CENTER, MONTHS, YEARS, getBasemap } from './config';
+import { leadingZero } from '../../utils/format';
+import { MAP_CENTER, MONTHS, YEARS, getBasemap, getLayer } from './config';
 
 const useStyle = makeStyles((theme) => ({
     container: {
@@ -76,11 +78,29 @@ const Index = (): JSX.Element => {
 
     const [opacity, setOpacity] = React.useState<number>(30);
 
+    const [map, updateMap] = React.useState<OLMap>();
+
+    React.useEffect(() => {
+        updateLayer();
+    }, [map, opacity, selectedYear, selectedMonth]);
+
     const handleOpacityBlur = () => {
         if (opacity < 0) {
             setOpacity(0);
         } else if (opacity > 100) {
             setOpacity(100);
+        }
+    };
+
+    const updateLayer = () => {
+        if (map) {
+            getLayer(
+                map,
+                opacity / 100,
+                'gcvi',
+                selectedYear,
+                leadingZero(MONTHS.findIndex((month) => month === selectedMonth) + 4)
+            );
         }
     };
 
@@ -153,7 +173,13 @@ const Index = (): JSX.Element => {
                             </Grid>
                         </Grid>
                         <Grid className={classes.mapContainer} container>
-                            <Map className="fillContainer" zoom={6.5} center={MAP_CENTER} layers={[basemapLayer]} />
+                            <Map
+                                className="fillContainer"
+                                zoom={10}
+                                center={MAP_CENTER}
+                                layers={[basemapLayer]}
+                                updateMap={updateMap}
+                            />
                         </Grid>
                         <Grid container>
                             <Grid item container xs={6} direction="column">

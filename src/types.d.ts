@@ -151,10 +151,21 @@ declare namespace NAdvisor {
     }
 }
 
+declare namespace SatViewer {
+    import TileLayer from 'ol/layer/Tile';
+
+    interface Layers {
+        [category: string]: {
+            [data: string]: TileLayer;
+        };
+    }
+}
+
 declare namespace NodeJS {
     interface ProcessEnv {
         readonly NODE_ENV: 'development' | 'production' | 'test';
         readonly PUBLIC_PATH: string;
+        readonly GEOSERVER_URL: string;
     }
 }
 

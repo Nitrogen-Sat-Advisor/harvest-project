@@ -22,7 +22,7 @@ module.exports = webpackMerge.merge(commonConfig, {
 
     plugins: [
         new Webpack.DefinePlugin({
-            'process.env.NODE_ENV': '"development"'
+            'process.env.NODE_ENV': JSON.stringify('development')
         }),
         new BundleAnalyzerPlugin({ openAnalyzer: false, analyzerPort: 5050 })
     ]
