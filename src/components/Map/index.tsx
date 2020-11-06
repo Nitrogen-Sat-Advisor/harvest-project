@@ -2,6 +2,7 @@ import React from 'react';
 import { Map as OLMap, View } from 'ol';
 import { defaults as defaultControls, Control } from 'ol/control';
 import { Extent } from 'ol/extent';
+import GroupLayer from 'ol/layer/Group';
 import Layer from 'ol/layer/Layer';
 
 import type { MapBrowserEvent } from 'ol';
@@ -21,7 +22,7 @@ interface Props {
     extent?: Extent;
     defaultControlsOptions?: DefaultsOptions;
     controls?: Control[];
-    layers?: Array<Layer>;
+    layers?: Array<Layer | GroupLayer>;
     updateMap?: (map: OLMap) => void;
     events?: { [k: string]: (e: MapBrowserEvent) => void };
 }

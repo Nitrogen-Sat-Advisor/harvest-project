@@ -1,5 +1,12 @@
 import React from 'react';
-import { Map as OLMap } from 'ol';
+import { Feature, Map as OLMap } from 'ol';
+import { Polygon } from 'ol/geom';
+import TileLayer from 'ol/layer/Tile';
+import VectorLayer from 'ol/layer/Vector';
+import { getVectorContext } from 'ol/render';
+import TileWMSSource from 'ol/source/TileWMS';
+import VectorSource from 'ol/source/Vector';
+import { Fill, Style } from 'ol/style';
 import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
@@ -8,6 +15,7 @@ import Container from '@material-ui/core/Container';
 import Fab from '@material-ui/core/Fab';
 import FormControl from '@material-ui/core/FormControl';
 import Grid from '@material-ui/core/Grid';
+import IconButton from '@material-ui/core/IconButton';
 import MenuItem from '@material-ui/core/MenuItem';
 import Paper from '@material-ui/core/Paper';
 import Select from '@material-ui/core/Select';
@@ -15,10 +23,28 @@ import Slider from '@material-ui/core/Slider';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import AddIcon from '@material-ui/icons/Add';
+import DeleteIcon from '@material-ui/icons/Delete';
 
-import Map from '../Map';
+import CLU_FIXTURE from '../../fixtures/clu.json';
 import { leadingZero } from '../../utils/format';
-import { MAP_CENTER, MONTHS, YEARS, getBasemap, getLayer } from './config';
+import Map from '../Map';
+import { MAP_CENTER, SOURCES, MONTHS, YEARS, getBasemap } from './config';
+
+const getSource = (year: string, month: string): TileWMSSource => {
+    const layerName = `${year}-${month}`;
+    let source = SOURCES[layerName];
+    if (!source) {
+        source = new TileWMSSource({
+            url: `${process.env.GEOSERVER_URL}/sat-viewer/wms`,
+            params: {
+                LAYERS: `sat-viewer:${year}.${month}.15.gcvi`
+            }
+        });
+        SOURCES[layerName] = source;
+    }
+
+    return source;
+};
 
 const useStyle = makeStyles((theme) => ({
     container: {
@@ -37,6 +63,18 @@ const useStyle = makeStyles((theme) => ({
         'background': theme.palette.secondary.light,
         '& > *': {
             marginRight: theme.spacing(1)
+        }
+    },
+    farmContainer: {
+        background: theme.palette.primary.light,
+        marginBottom: theme.spacing(1),
+        borderRadius: 5,
+        cursor: 'pointer'
+    },
+    farmContainerSelected: {
+        'background': theme.palette.primary.main,
+        '& > *': {
+            color: '#fff'
         }
     },
     monthYearContainer: {
@@ -70,19 +108,44 @@ const useStyle = makeStyles((theme) => ({
 
 const basemapLayer = getBasemap();
 
+const boundaryLayer = new VectorLayer({
+    style: undefined,
+    zIndex: 1000,
+    source: new VectorSource({
+        features: []
+    })
+});
+const boundaryStyle = new Style({
+    fill: new Fill({
+        color: 'black'
+    })
+});
+
+const geotiffLayer = new TileLayer({});
+geotiffLayer.on('postrender', (e) => {
+    const vectorContext = getVectorContext(e);
+    e.context.globalCompositeOperation = 'destination-in';
+    boundaryLayer.getSource().forEachFeature((feature) => {
+        vectorContext.drawFeature(feature, boundaryStyle);
+    });
+    e.context.globalCompositeOperation = 'source-over';
+});
+
 const Index = (): JSX.Element => {
     const classes = useStyle();
+
+    const [selectedBoundary, updateSelectedBoundary] = React.useState<number>();
 
     const [selectedYear, updateSelectedYear] = React.useState<string>(YEARS[0]);
     const [selectedMonth, updateSelectedMonth] = React.useState<string>(MONTHS[0]);
 
-    const [opacity, setOpacity] = React.useState<number>(30);
+    const [opacity, setOpacity] = React.useState<number>(100);
 
     const [map, updateMap] = React.useState<OLMap>();
 
     React.useEffect(() => {
         updateLayer();
-    }, [map, opacity, selectedYear, selectedMonth]);
+    }, [map, selectedBoundary, opacity, selectedYear, selectedMonth]);
 
     const handleOpacityBlur = () => {
         if (opacity < 0) {
@@ -94,13 +157,26 @@ const Index = (): JSX.Element => {
 
     const updateLayer = () => {
         if (map) {
-            getLayer(
-                map,
-                opacity / 100,
-                'gcvi',
+            const boundary = CLU_FIXTURE.find(({ id }) => id === selectedBoundary);
+            const source = getSource(
                 selectedYear,
                 leadingZero(MONTHS.findIndex((month) => month === selectedMonth) + 4)
             );
+
+            if (boundary) {
+                const boundarySource = boundaryLayer.getSource();
+                boundarySource.clear();
+                boundarySource.addFeature(
+                    new Feature({
+                        geometry: new Polygon([boundary.boundary])
+                    })
+                );
+                const extent = boundarySource.getExtent();
+                map.getView().fit(extent);
+                geotiffLayer.setSource(source);
+                geotiffLayer.setOpacity(opacity);
+                geotiffLayer.setExtent(extent);
+            }
         }
     };
 
@@ -108,7 +184,7 @@ const Index = (): JSX.Element => {
         <Grid className={classes.container} container>
             <Grid className={classes.containerItem} container item xs={4}>
                 <Paper className={`${classes.sidebarContainer} fullwidth`} square elevation={1}>
-                    <Grid className={classes.sidebarHeader} container item alignItems="center">
+                    <Grid className={classes.sidebarHeader} container alignItems="center">
                         <Grid item component={Fab} color="primary" size="medium">
                             <AddIcon />
                         </Grid>
@@ -116,10 +192,39 @@ const Index = (): JSX.Element => {
                             Add Field
                         </Grid>
                     </Grid>
-                    <Grid item component={Typography} variant="h5">
-                        Your Fields
-                    </Grid>
+                    <Typography variant="h5">Your Fields</Typography>
                     <Typography variant="body2">Select a field below to view satellite images for the field</Typography>
+                    <Grid container direction="column" spacing={1}>
+                        {CLU_FIXTURE.map(({ id, title }) => (
+                            <Grid
+                                key={id}
+                                className={`${classes.farmContainer} ${
+                                    id === selectedBoundary ? classes.farmContainerSelected : ''
+                                }`}
+                                item
+                                container
+                                alignItems="center"
+                                onClick={() => updateSelectedBoundary(id)}
+                            >
+                                <Grid item xs={1} />
+                                <Grid item xs={9} component={Typography} variant="body1">
+                                    {title}
+                                </Grid>
+                                <Grid
+                                    item
+                                    xs={2}
+                                    component={IconButton}
+                                    onClick={(e: React.MouseEvent) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        console.warn(`DELETING ${id}`);
+                                    }}
+                                >
+                                    <DeleteIcon />
+                                </Grid>
+                            </Grid>
+                        ))}
+                    </Grid>
                 </Paper>
             </Grid>
             <Grid className={classes.containerItem} item xs={8}>
@@ -175,9 +280,11 @@ const Index = (): JSX.Element => {
                         <Grid className={classes.mapContainer} container>
                             <Map
                                 className="fillContainer"
+                                projection="EPSG:4326"
                                 zoom={10}
+                                maxZoom={20}
                                 center={MAP_CENTER}
-                                layers={[basemapLayer]}
+                                layers={[basemapLayer, geotiffLayer, boundaryLayer]}
                                 updateMap={updateMap}
                             />
                         </Grid>

@@ -152,12 +152,10 @@ declare namespace NAdvisor {
 }
 
 declare namespace SatViewer {
-    import TileLayer from 'ol/layer/Tile';
+    import TileWMSSource from 'ol/source/TileWMS';
 
-    interface Layers {
-        [category: string]: {
-            [data: string]: TileLayer;
-        };
+    interface Sources {
+        [date: string]: TileWMSSource;
     }
 }
 
