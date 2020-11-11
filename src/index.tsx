@@ -2,9 +2,19 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import { ThemeProvider } from '@material-ui/styles';
+import * as Sentry from '@sentry/react';
+import { Integrations } from '@sentry/tracing';
 
 import { theme } from './theme';
 import routes from './routes';
+
+if (process.env.SENTRY_DSN) {
+    Sentry.init({
+        dsn: process.env.SENTRY_DSN,
+        integrations: [new Integrations.BrowserTracing()],
+        tracesSampleRate: 0
+    });
+}
 
 ReactDOM.render(
     <Router>

@@ -194,6 +194,7 @@ declare namespace NodeJS {
         readonly PUBLIC_PATH: string;
         readonly GEOSERVER_URL: string;
         readonly CLU_SERVER_URL: string;
+        readonly SENTRY_DSN: string;
     }
 }
 
