@@ -118,7 +118,8 @@ module.exports = {
         }),
         new Webpack.DefinePlugin({
             'process.env.PUBLIC_PATH': JSON.stringify(process.env.PUBLIC_PATH || '/'),
-            'process.env.GEOSERVER_URL': JSON.stringify(process.env.GEOSERVER_URL || '/geoserver')
+            'process.env.GEOSERVER_URL': JSON.stringify(process.env.GEOSERVER_URL || '/geoserver'),
+            'process.env.CLU_SERVER_URL': JSON.stringify(process.env.CLU_SERVER_URL || '/api')
         }),
         new FaviconsWebpackPlugin({
             logo: './src/images/favicon.png',

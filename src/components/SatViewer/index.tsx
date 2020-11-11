@@ -1,10 +1,10 @@
 import React from 'react';
-import { Feature, Map as OLMap } from 'ol';
-import { Polygon } from 'ol/geom';
+import axios from 'axios';
+import { Map as OLMap, MapBrowserEvent } from 'ol';
+import GeoJSON from 'ol/format/GeoJSON';
 import TileLayer from 'ol/layer/Tile';
 import VectorLayer from 'ol/layer/Vector';
 import { getVectorContext } from 'ol/render';
-import TileWMSSource from 'ol/source/TileWMS';
 import VectorSource from 'ol/source/Vector';
 import { Fill, Style } from 'ol/style';
 import { makeStyles } from '@material-ui/core/styles';
@@ -25,26 +25,13 @@ import Typography from '@material-ui/core/Typography';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 
-import CLU_FIXTURE from '../../fixtures/clu.json';
+import type { Layer as LayerType } from 'ol/layer';
+import type TileWMSSource from 'ol/source/TileWMS';
+
 import { leadingZero } from '../../utils/format';
+import { LayoutStateContext } from '../Layouts/MainLayout';
 import Map from '../Map';
-import { MAP_CENTER, SOURCES, MONTHS, YEARS, getBasemap } from './config';
-
-const getSource = (year: string, month: string): TileWMSSource => {
-    const layerName = `${year}-${month}`;
-    let source = SOURCES[layerName];
-    if (!source) {
-        source = new TileWMSSource({
-            url: `${process.env.GEOSERVER_URL}/sat-viewer/wms`,
-            params: {
-                LAYERS: `sat-viewer:${year}.${month}.15.gcvi`
-            }
-        });
-        SOURCES[layerName] = source;
-    }
-
-    return source;
-};
+import { MAP_CENTER, MONTHS, YEARS, getBasemap, getCLULayer, getGCVISource } from './config';
 
 const useStyle = makeStyles((theme) => ({
     container: {
@@ -52,9 +39,12 @@ const useStyle = makeStyles((theme) => ({
     },
     containerItem: {
         padding: theme.spacing(2),
-        paddingRight: 0
+        paddingRight: 0,
+        height: '100%',
+        overflowY: 'auto'
     },
     sidebarContainer: {
+        'width': '99%',
         '& > *': {
             padding: theme.spacing(2)
         }
@@ -62,7 +52,8 @@ const useStyle = makeStyles((theme) => ({
     sidebarHeader: {
         'background': theme.palette.secondary.light,
         '& > *': {
-            marginRight: theme.spacing(1)
+            marginRight: theme.spacing(2),
+            marginBottom: theme.spacing(2)
         }
     },
     farmContainer: {
@@ -107,13 +98,15 @@ const useStyle = makeStyles((theme) => ({
 }));
 
 const basemapLayer = getBasemap();
+const cluLayer = getCLULayer();
 
 const boundaryLayer = new VectorLayer({
     style: undefined,
     zIndex: 1000,
     source: new VectorSource({
         features: []
-    })
+    }),
+    opacity: 0
 });
 const boundaryStyle = new Style({
     fill: new Fill({
@@ -134,7 +127,39 @@ geotiffLayer.on('postrender', (e) => {
 const Index = (): JSX.Element => {
     const classes = useStyle();
 
-    const [selectedBoundary, updateSelectedBoundary] = React.useState<number>();
+    const {
+        layoutState: { userId, clus },
+        layoutStateDispatch
+    } = React.useContext(LayoutStateContext);
+
+    const [isAddingCLU, updateIsAddingCLU] = React.useState(false);
+    const isAddingCLURef = React.useRef(isAddingCLU);
+    const [newFieldName, updateNewFieldName] = React.useState('');
+    const [newFieldCLUId, updateNewFieldCLUId] = React.useState<number | null>(null);
+
+    const [userFields, updateUserFields] = React.useState<SatViewer.UserField[]>([]);
+
+    const [selectedCLU, updateSelectedCLU] = React.useState<GeoJSONType.MultiPolygon>();
+
+    React.useEffect(() => {
+        if (userId) {
+            layoutStateDispatch({ type: 'isLoading', isLoading: true });
+            axios
+                .get(`${process.env.CLU_SERVER_URL}/user-field?user_id=${userId}`)
+                .then(({ data }) => {
+                    updateUserFields(data);
+                })
+                .catch((e) => {
+                    console.error(`Could not get user fields ${userId}: ${e}`);
+                })
+                .finally(() => {
+                    layoutStateDispatch({ type: 'isLoading', isLoading: false });
+                });
+        } else {
+            updateUserFields([]);
+            updateSelectedCLU(undefined);
+        }
+    }, [userId]);
 
     const [selectedYear, updateSelectedYear] = React.useState<string>(YEARS[0]);
     const [selectedMonth, updateSelectedMonth] = React.useState<string>(MONTHS[0]);
@@ -145,7 +170,38 @@ const Index = (): JSX.Element => {
 
     React.useEffect(() => {
         updateLayer();
-    }, [map, selectedBoundary, opacity, selectedYear, selectedMonth]);
+    }, [map, selectedCLU, selectedYear, selectedMonth]);
+
+    React.useEffect(() => {
+        geotiffLayer.setOpacity(opacity);
+    }, [opacity]);
+
+    const handleNewFieldCancel = () => {
+        isAddingCLURef.current = false;
+        updateIsAddingCLU(false);
+        updateNewFieldName('');
+        updateNewFieldCLUId(null);
+    };
+
+    const handleCLUSelect = (cluId: number) => {
+        if (clus[cluId]) {
+            updateSelectedCLU(clus[cluId]);
+        } else {
+            layoutStateDispatch({ type: 'isLoading', isLoading: true });
+            axios
+                .get(`${process.env.CLU_SERVER_URL}/CLUs/${cluId}`)
+                .then(({ data }) => {
+                    updateSelectedCLU(data);
+                    layoutStateDispatch({ type: 'addCLU', clu: data as GeoJSONType.MultiPolygon });
+                })
+                .catch((e) => {
+                    console.error(`Could not get CLU ${cluId}: ${e}`);
+                })
+                .finally(() => {
+                    layoutStateDispatch({ type: 'isLoading', isLoading: false });
+                });
+        }
+    };
 
     const handleOpacityBlur = () => {
         if (opacity < 0) {
@@ -155,26 +211,91 @@ const Index = (): JSX.Element => {
         }
     };
 
+    const handleMapClick = (event: MapBrowserEvent) => {
+        if (isAddingCLURef.current) {
+            const clickedLayer: LayerType | null = event.map.forEachLayerAtPixel(
+                event.pixel,
+                (layer) => layer.get('clu') && layer
+            );
+            if (clickedLayer) {
+                const cluSource = clickedLayer.getSource() as TileWMSSource;
+                const infoUrl = cluSource.getFeatureInfoUrl(
+                    event.coordinate,
+                    event.map.getView().getResolution(),
+                    'EPSG:4326',
+                    {
+                        INFO_FORMAT: 'application/json'
+                    }
+                );
+                axios
+                    .get(infoUrl)
+                    .then(({ data: { features } }) => {
+                        if (features[0]) {
+                            updateNewFieldCLUId(parseInt(features[0].id.split('.')[1], 10));
+                        }
+                    })
+                    .catch((e) => {
+                        console.error(`Could not get clu info: ${e}`);
+                    });
+            }
+        }
+    };
+
+    const handleAddField = () => {
+        if (newFieldCLUId) {
+            layoutStateDispatch({ type: 'isLoading', isLoading: true });
+            axios
+                .post(`${process.env.CLU_SERVER_URL}/user-field`, {
+                    user_id: userId,
+                    clu: newFieldCLUId,
+                    clu_name: newFieldName
+                })
+                .then(() => {
+                    updateUserFields([...userFields, { clu: newFieldCLUId, clu_name: newFieldName }]);
+                    handleCLUSelect(newFieldCLUId);
+                    handleNewFieldCancel();
+                })
+                .catch((e) => {
+                    console.error(`Could not add new field: ${e}`);
+                })
+                .finally(() => {
+                    layoutStateDispatch({ type: 'isLoading', isLoading: false });
+                });
+        }
+    };
+
+    const handleDeleteField = (cluId: number) => {
+        layoutStateDispatch({ type: 'isLoading', isLoading: true });
+        axios
+            .delete(`${process.env.CLU_SERVER_URL}/user-field?user_id=${userId}&clu=${cluId}`)
+            .then(() => {
+                updateUserFields(userFields.filter(({ clu }) => clu !== cluId));
+                if (cluId === selectedCLU?.properties.clu_id) {
+                    updateSelectedCLU(undefined);
+                }
+            })
+            .catch((e) => {
+                console.error(`Could not delete field: ${e}`);
+            })
+            .finally(() => {
+                layoutStateDispatch({ type: 'isLoading', isLoading: false });
+            });
+    };
+
     const updateLayer = () => {
         if (map) {
-            const boundary = CLU_FIXTURE.find(({ id }) => id === selectedBoundary);
-            const source = getSource(
+            const source = getGCVISource(
                 selectedYear,
                 leadingZero(MONTHS.findIndex((month) => month === selectedMonth) + 4)
             );
 
-            if (boundary) {
+            if (selectedCLU) {
                 const boundarySource = boundaryLayer.getSource();
                 boundarySource.clear();
-                boundarySource.addFeature(
-                    new Feature({
-                        geometry: new Polygon([boundary.boundary])
-                    })
-                );
+                boundarySource.addFeatures(new GeoJSON().readFeatures(selectedCLU));
                 const extent = boundarySource.getExtent();
                 map.getView().fit(extent);
                 geotiffLayer.setSource(source);
-                geotiffLayer.setOpacity(opacity);
                 geotiffLayer.setExtent(extent);
             }
         }
@@ -183,32 +304,84 @@ const Index = (): JSX.Element => {
     return (
         <Grid className={classes.container} container>
             <Grid className={classes.containerItem} container item xs={4}>
-                <Paper className={`${classes.sidebarContainer} fullwidth`} square elevation={1}>
+                <Paper className={classes.sidebarContainer} square elevation={1}>
                     <Grid className={classes.sidebarHeader} container alignItems="center">
-                        <Grid item component={Fab} color="primary" size="medium">
+                        <Grid
+                            item
+                            component={Fab}
+                            color="primary"
+                            size="medium"
+                            disabled={!userId}
+                            onClick={() => {
+                                updateIsAddingCLU(true);
+                                isAddingCLURef.current = true;
+                            }}
+                        >
                             <AddIcon />
                         </Grid>
                         <Grid item component={Typography} variant="h5">
                             Add Field
                         </Grid>
+                        {isAddingCLU ? (
+                            <Grid item container xs={12} spacing={1}>
+                                <Grid item xs={12} component={FormControl} variant="outlined" fullWidth>
+                                    <Typography variant="body2" gutterBottom>
+                                        Click on the map to select a field.
+                                    </Typography>
+                                    <Typography variant="body2">
+                                        <i>Selected field:</i>
+                                        &nbsp;
+                                        <b>{newFieldCLUId || 'None'}</b>
+                                    </Typography>
+                                </Grid>
+                                <Grid item xs={12} component={FormControl} variant="outlined" fullWidth>
+                                    <Typography variant="body2">Field Name</Typography>
+                                    <TextField
+                                        variant="outlined"
+                                        size="small"
+                                        placeholder="Field Name"
+                                        value={newFieldName}
+                                        onChange={({ target: { value } }) => updateNewFieldName(value)}
+                                    />
+                                </Grid>
+                                <Grid item xs={4} />
+                                <Grid item xs={4}>
+                                    <Button fullWidth variant="contained" size="small" onClick={handleNewFieldCancel}>
+                                        Cancel
+                                    </Button>
+                                </Grid>
+                                <Grid item xs={4}>
+                                    <Button
+                                        fullWidth
+                                        variant="contained"
+                                        color="primary"
+                                        size="small"
+                                        disabled={!newFieldName || !newFieldCLUId}
+                                        onClick={handleAddField}
+                                    >
+                                        Submit
+                                    </Button>
+                                </Grid>
+                            </Grid>
+                        ) : null}
                     </Grid>
                     <Typography variant="h5">Your Fields</Typography>
                     <Typography variant="body2">Select a field below to view satellite images for the field</Typography>
                     <Grid container direction="column" spacing={1}>
-                        {CLU_FIXTURE.map(({ id, title }) => (
+                        {userFields.map(({ clu: cluId, clu_name: cluName }) => (
                             <Grid
-                                key={id}
+                                key={cluId}
                                 className={`${classes.farmContainer} ${
-                                    id === selectedBoundary ? classes.farmContainerSelected : ''
+                                    cluId === selectedCLU?.properties.clu_id ? classes.farmContainerSelected : ''
                                 }`}
                                 item
                                 container
                                 alignItems="center"
-                                onClick={() => updateSelectedBoundary(id)}
+                                onClick={() => handleCLUSelect(cluId)}
                             >
                                 <Grid item xs={1} />
                                 <Grid item xs={9} component={Typography} variant="body1">
-                                    {title}
+                                    {cluName}
                                 </Grid>
                                 <Grid
                                     item
@@ -217,7 +390,7 @@ const Index = (): JSX.Element => {
                                     onClick={(e: React.MouseEvent) => {
                                         e.preventDefault();
                                         e.stopPropagation();
-                                        console.warn(`DELETING ${id}`);
+                                        handleDeleteField(cluId);
                                     }}
                                 >
                                     <DeleteIcon />
@@ -284,8 +457,9 @@ const Index = (): JSX.Element => {
                                 zoom={10}
                                 maxZoom={20}
                                 center={MAP_CENTER}
-                                layers={[basemapLayer, geotiffLayer, boundaryLayer]}
+                                layers={[basemapLayer, cluLayer, geotiffLayer, boundaryLayer]}
                                 updateMap={updateMap}
+                                events={{ click: handleMapClick }}
                             />
                         </Grid>
                         <Grid container>

@@ -117,7 +117,7 @@ const Inputs = (props: Props): JSX.Element => {
 
         if (previous.district !== inputs.district) {
             // Update styling of districts
-            districtsLayer.setStyle(STYLES.districts(inputs.district.toString()));
+            districtsLayer.setStyle(STYLES.districts(inputs.district));
         }
 
         inputsRef.current = {

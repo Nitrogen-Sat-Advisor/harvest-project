@@ -39,16 +39,38 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const initialLayoutState: Layout.StateType = {
-    isLoading: false
+    isLoading: false,
+    userId: null,
+    clus: {}
 };
 
 const layoutStateReducer = (
     state: Layout.StateType = initialLayoutState,
     action: Layout.StateAction
-): Layout.StateType => ({
-    ...state,
-    [action.type]: action.value
-});
+): Layout.StateType => {
+    switch (action.type) {
+        case 'isLoading':
+            return {
+                ...state,
+                isLoading: action.isLoading
+            };
+        case 'userId':
+            return {
+                ...state,
+                userId: action.userId
+            };
+        case 'addCLU':
+            return {
+                ...state,
+                clus: {
+                    ...state.clus,
+                    [action.clu.properties.clu_id]: action.clu
+                }
+            };
+        default:
+            return state;
+    }
+};
 
 export const LayoutStateContext = React.createContext<Layout.StateContextType>({} as Layout.StateContextType);
 

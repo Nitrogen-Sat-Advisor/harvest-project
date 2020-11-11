@@ -15,6 +15,16 @@ interface ElementRect {
     paddingLeft: number | null;
 }
 
+declare namespace GeoJSONType {
+    interface MultiPolygon {
+        type: 'MultiPolygon';
+        coordinates: [number, number][][][];
+        properties: {
+            clu_id: number;
+        };
+    }
+}
+
 declare namespace Plot {
     import { ScaleBand, ScaleContinuousNumeric } from 'd3-scale';
 
@@ -48,13 +58,27 @@ declare namespace Layout {
 
     interface UpdateLoadingAction {
         type: 'isLoading';
-        value: boolean;
+        isLoading: boolean;
     }
 
-    type StateAction = UpdateLoadingAction;
+    interface UpdateUserAction {
+        type: 'userId';
+        userId: string | null;
+    }
+
+    interface AddCLUAction {
+        type: 'addCLU';
+        clu: GeoJSONType.MultiPolygon;
+    }
+
+    type StateAction = UpdateLoadingAction | UpdateUserAction | AddCLUAction;
 
     interface StateType {
         isLoading: boolean;
+        userId: string | null;
+        clus: {
+            [cluId: string]: GeoJSONType.MultiPolygon;
+        };
     }
 
     interface StateContextType {
@@ -157,6 +181,11 @@ declare namespace SatViewer {
     interface Sources {
         [date: string]: TileWMSSource;
     }
+
+    interface UserField {
+        clu: number;
+        clu_name: string;
+    }
 }
 
 declare namespace NodeJS {
@@ -164,6 +193,7 @@ declare namespace NodeJS {
         readonly NODE_ENV: 'development' | 'production' | 'test';
         readonly PUBLIC_PATH: string;
         readonly GEOSERVER_URL: string;
+        readonly CLU_SERVER_URL: string;
     }
 }
 

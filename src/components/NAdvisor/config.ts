@@ -45,8 +45,8 @@ export const STYLES = {
             width: 1
         })
     }),
-    districts: (selectedDistrict: string) => (feature: FeatureType): Style => {
-        const districtId = feature.get('id');
+    districts: (selectedDistrict: number) => (feature: FeatureType): Style => {
+        const districtId = parseInt(feature.get('id'), 10);
         const isSelected = districtId === selectedDistrict;
         return new Style({
             fill: new Fill({
@@ -97,7 +97,7 @@ export const getDistrictsLayer = (): VectorLayer => {
                 featureProjection: 'EPSG:3857'
             })
         }),
-        style: STYLES.districts('')
+        style: STYLES.districts(0)
     });
     districtsLayer.set('interactive', true);
     return districtsLayer;

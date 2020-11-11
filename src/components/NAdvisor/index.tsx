@@ -30,7 +30,7 @@ const Index = (): JSX.Element => {
 
     const handleCalculate = () => {
         if (areInputsValid) {
-            layoutStateDispatch({ type: 'isLoading', value: true });
+            layoutStateDispatch({ type: 'isLoading', isLoading: true });
             axios
                 .post(`${datawolfConfig.url}/executions`, createDatawolfRequestBody(inputs))
                 .then(({ data: executionGUID }) => {
@@ -39,16 +39,16 @@ const Index = (): JSX.Element => {
                         (data) => {
                             updateResults(data);
                             updateActiveView('results');
-                            layoutStateDispatch({ type: 'isLoading', value: false });
+                            layoutStateDispatch({ type: 'isLoading', isLoading: false });
                         },
                         () => {
-                            layoutStateDispatch({ type: 'isLoading', value: false });
+                            layoutStateDispatch({ type: 'isLoading', isLoading: false });
                         }
                     );
                 })
                 .catch((e) => {
                     console.error(`Could not start execution: ${e}`);
-                    layoutStateDispatch({ type: 'isLoading', value: false });
+                    layoutStateDispatch({ type: 'isLoading', isLoading: false });
                 });
         }
     };
