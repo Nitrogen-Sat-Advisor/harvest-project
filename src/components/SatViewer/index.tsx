@@ -173,7 +173,7 @@ const Index = (): JSX.Element => {
     }, [map, selectedCLU, selectedYear, selectedMonth]);
 
     React.useEffect(() => {
-        geotiffLayer.setOpacity(opacity);
+        geotiffLayer.setOpacity(opacity / 100);
     }, [opacity]);
 
     const handleNewFieldCancel = () => {
