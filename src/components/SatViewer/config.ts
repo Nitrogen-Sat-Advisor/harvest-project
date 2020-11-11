@@ -35,10 +35,6 @@ export const getGCVISource = (year: string, month: string): TileWMSSource => {
     const layerName = `${year}-${month}`;
     let source = SOURCES[layerName];
     if (!source) {
-        // source = new XYZ({
-        //     url: `${process.env.GEOSERVER_URL}/gwc/service/tms/1.0.0/sat-viewer:${year}.${month}.15.gcvi@EPSG:900913@png/{z}/{x}/{-y}.png`,
-        //     projection: 'EPSG:900913'
-        // });
         source = new TileWMSSource({
             url: `${process.env.GEOSERVER_URL}/sat-viewer/wms`,
             params: {

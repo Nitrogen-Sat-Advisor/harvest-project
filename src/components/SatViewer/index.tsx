@@ -1,12 +1,16 @@
 import React from 'react';
 import axios from 'axios';
 import { Map as OLMap, MapBrowserEvent } from 'ol';
-import GeoJSON from 'ol/format/GeoJSON';
+import Feature from 'ol/Feature';
+import MultiPolygon from 'ol/geom/MultiPolygon';
+import Point from 'ol/geom/Point';
 import TileLayer from 'ol/layer/Tile';
 import VectorLayer from 'ol/layer/Vector';
-import { getVectorContext } from 'ol/render';
 import VectorSource from 'ol/source/Vector';
-import { Fill, Style } from 'ol/style';
+import { Icon, Style } from 'ol/style';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import Crop from 'ol-ext/filter/Crop';
 import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
@@ -26,8 +30,8 @@ import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 
 import type { Layer as LayerType } from 'ol/layer';
-import type TileWMSSource from 'ol/source/TileWMS';
 
+import MapMarkerIcon from '../../images/map-marker.svg';
 import { leadingZero } from '../../utils/format';
 import { LayoutStateContext } from '../Layouts/MainLayout';
 import Map from '../Map';
@@ -100,28 +104,31 @@ const useStyle = makeStyles((theme) => ({
 const basemapLayer = getBasemap();
 const cluLayer = getCLULayer();
 
-const boundaryLayer = new VectorLayer({
-    style: undefined,
-    zIndex: 1000,
-    source: new VectorSource({
-        features: []
-    }),
-    opacity: 0
-});
-const boundaryStyle = new Style({
-    fill: new Fill({
-        color: 'black'
-    })
+const cropFeature = new Feature(new MultiPolygon([]));
+const cropLayer = new Crop({
+    feature: cropFeature,
+    inner: false
 });
 
 const geotiffLayer = new TileLayer({});
-geotiffLayer.on('postrender', (e) => {
-    const vectorContext = getVectorContext(e);
-    e.context.globalCompositeOperation = 'destination-in';
-    boundaryLayer.getSource().forEachFeature((feature) => {
-        vectorContext.drawFeature(feature, boundaryStyle);
-    });
-    e.context.globalCompositeOperation = 'source-over';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+geotiffLayer.addFilter(cropLayer);
+
+const selectedFieldBoundary = new VectorLayer({
+    source: new VectorSource(),
+    visible: false
+});
+
+const selectedFieldMarker = new VectorLayer({
+    source: new VectorSource(),
+    style: new Style({
+        image: new Icon({
+            src: MapMarkerIcon,
+            color: 'blue'
+        })
+    }),
+    visible: false
 });
 
 const Index = (): JSX.Element => {
@@ -181,6 +188,10 @@ const Index = (): JSX.Element => {
         updateIsAddingCLU(false);
         updateNewFieldName('');
         updateNewFieldCLUId(null);
+        selectedFieldBoundary.setVisible(false);
+        selectedFieldBoundary.getSource().clear();
+        selectedFieldMarker.setVisible(false);
+        selectedFieldMarker.getSource().clear();
     };
 
     const handleCLUSelect = (cluId: number) => {
@@ -218,21 +229,25 @@ const Index = (): JSX.Element => {
                 (layer) => layer.get('clu') && layer
             );
             if (clickedLayer) {
-                const cluSource = clickedLayer.getSource() as TileWMSSource;
-                const infoUrl = cluSource.getFeatureInfoUrl(
-                    event.coordinate,
-                    event.map.getView().getResolution(),
-                    'EPSG:4326',
-                    {
-                        INFO_FORMAT: 'application/json'
-                    }
-                );
+                const [long, lat] = event.coordinate;
                 axios
-                    .get(infoUrl)
-                    .then(({ data: { features } }) => {
-                        if (features[0]) {
-                            updateNewFieldCLUId(parseInt(features[0].id.split('.')[1], 10));
-                        }
+                    .get(`${process.env.CLU_SERVER_URL}/CLUs?lat=${lat}&long=${long}`)
+                    .then(({ data }) => {
+                        const clu = data as GeoJSONType.MultiPolygon;
+                        updateNewFieldCLUId(clu.properties.clu_id);
+                        layoutStateDispatch({ type: 'addCLU', clu });
+                        const selectedFieldSource = selectedFieldBoundary.getSource();
+                        selectedFieldSource.clear();
+                        const selectedFieldPolygon = new MultiPolygon(clu.coordinates);
+                        selectedFieldSource.addFeature(new Feature(selectedFieldPolygon));
+                        selectedFieldBoundary.setVisible(true);
+                        const selectedFieldMarkerSource = selectedFieldMarker.getSource();
+                        selectedFieldMarkerSource.clear();
+                        const [xMin, yMin, xMax, yMax] = selectedFieldPolygon.getExtent();
+                        selectedFieldMarker
+                            .getSource()
+                            .addFeature(new Feature(new Point([(xMin + xMax) / 2, (yMin + yMax) / 2])));
+                        selectedFieldMarker.setVisible(true);
                     })
                     .catch((e) => {
                         console.error(`Could not get clu info: ${e}`);
@@ -290,11 +305,9 @@ const Index = (): JSX.Element => {
             );
 
             if (selectedCLU) {
-                const boundarySource = boundaryLayer.getSource();
-                boundarySource.clear();
-                boundarySource.addFeatures(new GeoJSON().readFeatures(selectedCLU));
-                const extent = boundarySource.getExtent();
-                map.getView().fit(extent);
+                cropFeature.getGeometry().setCoordinates(selectedCLU.coordinates);
+                const extent = cropFeature.getGeometry().getExtent();
+                map.getView().fit(extent, { padding: [200, 200, 200, 200] });
                 geotiffLayer.setSource(source);
                 geotiffLayer.setExtent(extent);
             }
@@ -403,7 +416,10 @@ const Index = (): JSX.Element => {
             <Grid className={classes.containerItem} item xs={8}>
                 <Paper className="fillContainer" square elevation={0}>
                     <Box className="fillContainer" display="flex" flexDirection="column">
-                        <Typography variant="h4">South Farm</Typography>
+                        <Typography variant="h4">
+                            {userFields.find(({ clu: cluId }) => selectedCLU?.properties.clu_id === cluId)?.clu_name ||
+                                'Select a field'}
+                        </Typography>
 
                         <Grid className={classes.monthYearContainer} container>
                             <Grid item xs={3}>
@@ -457,7 +473,13 @@ const Index = (): JSX.Element => {
                                 zoom={10}
                                 maxZoom={20}
                                 center={MAP_CENTER}
-                                layers={[basemapLayer, cluLayer, geotiffLayer, boundaryLayer]}
+                                layers={[
+                                    basemapLayer,
+                                    cluLayer,
+                                    geotiffLayer,
+                                    selectedFieldBoundary,
+                                    selectedFieldMarker
+                                ]}
                                 updateMap={updateMap}
                                 events={{ click: handleMapClick }}
                             />
