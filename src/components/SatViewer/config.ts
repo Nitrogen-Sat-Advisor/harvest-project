@@ -1,6 +1,8 @@
 import TileLayer from 'ol/layer/Tile';
 import TileWMSSource from 'ol/source/TileWMS';
 
+export const USERS = ['john.doe@example.com', 'jane.doe@example.com'];
+
 export const YEARS = ['2019'];
 
 export const MONTHS = ['APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT'];
