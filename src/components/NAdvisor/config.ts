@@ -20,19 +20,31 @@ export const ROTATIONS = {
     cs: 'Corn Following Soybean'
 };
 
-export const N_FERTILIZER = {
-    1: 'Anhydrous Ammonia (82%)',
-    2: 'UAN (28%)',
-    3: 'UAN (32%)',
-    4: 'UAN (45%)'
-};
+export const N_FERTILIZER = [
+    {
+        label: 'Anhydrous Ammonia (82%)',
+        price: 512
+    },
+    {
+        label: 'UAN (28%)',
+        price: 840
+    },
+    {
+        label: 'UAN (32%)',
+        price: 860
+    },
+    {
+        label: 'UAN (45%)',
+        price: 920
+    }
+];
 
 export const initialInputs: NAdvisor.InputsType = {
     district: 0,
     rotation: 'cc',
-    nFertilizer: 1,
-    nPrice: 0,
-    cornPrice: 0
+    nFertilizer: 0,
+    nPrice: N_FERTILIZER[0].price,
+    cornPrice: 4.23
 };
 
 // N Advisor map config

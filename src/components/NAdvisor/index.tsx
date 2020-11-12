@@ -5,15 +5,26 @@ import { LayoutStateContext } from '../Layouts/MainLayout';
 import Inputs from './Inputs';
 import Results from './Results';
 import { createDatawolfRequestBody, getResults } from './datawolf';
-import { datawolfConfig, initialInputs } from './config';
+import { datawolfConfig, initialInputs, N_FERTILIZER } from './config';
 
 const inputsReducer = (
     state: NAdvisor.InputsType = initialInputs,
     action: NAdvisor.InputAction
-): NAdvisor.InputsType => ({
-    ...state,
-    [action.type]: action.value
-});
+): NAdvisor.InputsType => {
+    switch (action.type) {
+        case 'nFertilizer':
+            return {
+                ...state,
+                nFertilizer: action.value,
+                nPrice: N_FERTILIZER[action.value].price
+            };
+        default:
+            return {
+                ...state,
+                [action.type]: action.value
+            };
+    }
+};
 
 export const InputsContext = React.createContext<NAdvisor.InputsContextType>({} as NAdvisor.InputsContextType);
 
@@ -22,7 +33,7 @@ const Index = (): JSX.Element => {
 
     const [inputs, inputsDispatch] = React.useReducer(inputsReducer, initialInputs);
 
-    const areInputsValid = Object.values(inputs).every((v) => v);
+    const areInputsValid = Object.entries(inputs).every(([k, v]) => (k === 'nFertilizer' ? v > -1 : v));
 
     const [activeView, updateActiveView] = React.useState<'inputs' | 'results'>('inputs');
 

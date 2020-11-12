@@ -63,7 +63,7 @@ const Map = (props: Props): JSX.Element => {
         center = [0, 0],
         zoom = 7,
         minZoom = 0,
-        maxZoom = 14,
+        maxZoom = 28,
         extent = null,
         defaultControlsOptions = {},
         controls = [],

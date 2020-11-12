@@ -19,7 +19,7 @@ import Legend from '../Plots/Legend';
 import PlotBarChart from '../Plots/PlotBarChart';
 import PlotGrid from '../Plots/PlotGrid';
 import PlotLine from '../Plots/PlotLine';
-import { MAP_CENTER, ROTATIONS, STYLES, getBasemap, getDistrictsLayer } from './config';
+import { MAP_CENTER, N_FERTILIZER, ROTATIONS, STYLES, getBasemap, getDistrictsLayer } from './config';
 import { InputsContext } from './index';
 import PlotDots from '../Plots/PlotDots';
 
@@ -364,7 +364,7 @@ const Results = (props: Props): JSX.Element => {
                                             component={Typography}
                                             variant="subtitle2"
                                         >
-                                            {inputs.nFertilizer}
+                                            {N_FERTILIZER[inputs.nFertilizer].label}
                                         </Grid>
                                     </Grid>
                                     <Grid container item>
@@ -384,7 +384,7 @@ const Results = (props: Props): JSX.Element => {
                                             component={Typography}
                                             variant="subtitle2"
                                         >
-                                            {inputs.nPrice}
+                                            {inputs.nPrice} $/LB N
                                         </Grid>
                                     </Grid>
                                     <Grid container item>
@@ -404,7 +404,7 @@ const Results = (props: Props): JSX.Element => {
                                             component={Typography}
                                             variant="subtitle2"
                                         >
-                                            {inputs.cornPrice}
+                                            {inputs.cornPrice} $/BU
                                         </Grid>
                                     </Grid>
                                 </Grid>

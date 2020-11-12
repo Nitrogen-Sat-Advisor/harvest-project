@@ -39,7 +39,10 @@ export const getResults = (
                                 error();
                             });
                     })
-                    .catch((e) => console.error(`Could not get info for dataset ${datasetId}: ${e}`));
+                    .catch((e) => {
+                        console.error(`Could not get info for dataset ${datasetId}: ${e}`);
+                        error();
+                    });
             } else if (['WAITING', 'QUEUED', 'RUNNING'].includes(status)) {
                 setTimeout(() => {
                     getResults(executionGUID, success, error);

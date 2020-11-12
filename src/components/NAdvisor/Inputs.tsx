@@ -112,6 +112,14 @@ const Inputs = (props: Props): JSX.Element => {
         current: inputs
     });
 
+    React.useEffect(
+        () => () => {
+            // Clean up the map on unmount
+            districtsLayer.setStyle(STYLES.districts(inputs.district));
+        },
+        []
+    );
+
     React.useEffect(() => {
         const previous = inputsRef.current.current;
 
@@ -264,8 +272,8 @@ const Inputs = (props: Props): JSX.Element => {
                                 })
                             }
                         >
-                            {Object.entries(N_FERTILIZER).map(([value, label]) => (
-                                <MenuItem key={value} value={value}>
+                            {N_FERTILIZER.map(({ label }, idx) => (
+                                <MenuItem key={label} value={idx}>
                                     {label}
                                 </MenuItem>
                             ))}

@@ -28,6 +28,7 @@ import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
+import Alert from '@material-ui/lab/Alert';
 
 import type { Layer as LayerType } from 'ol/layer';
 
@@ -93,7 +94,8 @@ const useStyle = makeStyles((theme) => ({
     },
     legend: {
         height: theme.spacing(4),
-        background: 'linear-gradient(90deg, #F8F700 0%, #0E7001 100%)'
+        background:
+            'linear-gradient(90deg, #5e4fa2 0%, #3288bd 10%, #66c2a5 20%, #abdda4 30%, #e6f598 40%, #ffffbf 50%, #fee08b 60%, #fdae61 70%, #f46d43 80%, #d53e4f 90%, #9e0142 100%)'
     },
     opacityInput: {
         fontSize: '0.8rem',
@@ -148,6 +150,23 @@ const Index = (): JSX.Element => {
 
     const [selectedCLU, updateSelectedCLU] = React.useState<GeoJSONType.MultiPolygon>();
 
+    const [selectedYear, updateSelectedYear] = React.useState<string>(YEARS[0]);
+    const [selectedMonth, updateSelectedMonth] = React.useState<string>(MONTHS[0]);
+
+    const [opacity, setOpacity] = React.useState<number>(100);
+
+    const [map, updateMap] = React.useState<OLMap>();
+
+    const isNewField = userFields.findIndex(({ clu: cluId }) => cluId === newFieldCLUId) === -1;
+
+    React.useEffect(
+        () => () => {
+            // Clean up the map on unmount
+            cropFeature.getGeometry().setCoordinates([]);
+        },
+        []
+    );
+
     React.useEffect(() => {
         if (userId) {
             layoutStateDispatch({ type: 'isLoading', isLoading: true });
@@ -168,13 +187,6 @@ const Index = (): JSX.Element => {
         }
     }, [userId]);
 
-    const [selectedYear, updateSelectedYear] = React.useState<string>(YEARS[0]);
-    const [selectedMonth, updateSelectedMonth] = React.useState<string>(MONTHS[0]);
-
-    const [opacity, setOpacity] = React.useState<number>(100);
-
-    const [map, updateMap] = React.useState<OLMap>();
-
     React.useEffect(() => {
         updateLayer();
     }, [map, selectedCLU, selectedYear, selectedMonth]);
@@ -194,10 +206,15 @@ const Index = (): JSX.Element => {
         selectedFieldMarker.getSource().clear();
     };
 
-    const handleCLUSelect = (cluId: number) => {
-        if (clus[cluId]) {
+    const handleCLUToggle = (cluId: number) => {
+        if (cluId && selectedCLU?.properties.clu_id === cluId) {
+            // Deselect the field
+            updateSelectedCLU(undefined);
+        } else if (clus[cluId]) {
+            // Get field from cache
             updateSelectedCLU(clus[cluId]);
         } else {
+            // Fetch field from the API
             layoutStateDispatch({ type: 'isLoading', isLoading: true });
             axios
                 .get(`${process.env.CLU_SERVER_URL}/CLUs/${cluId}`)
@@ -257,7 +274,7 @@ const Index = (): JSX.Element => {
     };
 
     const handleAddField = () => {
-        if (newFieldCLUId) {
+        if (newFieldCLUId && isNewField) {
             layoutStateDispatch({ type: 'isLoading', isLoading: true });
             axios
                 .post(`${process.env.CLU_SERVER_URL}/user-field`, {
@@ -267,7 +284,7 @@ const Index = (): JSX.Element => {
                 })
                 .then(() => {
                     updateUserFields([...userFields, { clu: newFieldCLUId, clu_name: newFieldName }]);
-                    handleCLUSelect(newFieldCLUId);
+                    handleCLUToggle(newFieldCLUId);
                     handleNewFieldCancel();
                 })
                 .catch((e) => {
@@ -310,6 +327,9 @@ const Index = (): JSX.Element => {
                 map.getView().fit(extent, { padding: [200, 200, 200, 200] });
                 geotiffLayer.setSource(source);
                 geotiffLayer.setExtent(extent);
+                geotiffLayer.setVisible(true);
+            } else {
+                geotiffLayer.setVisible(false);
             }
         }
     };
@@ -369,11 +389,16 @@ const Index = (): JSX.Element => {
                                         variant="contained"
                                         color="primary"
                                         size="small"
-                                        disabled={!newFieldName || !newFieldCLUId}
+                                        disabled={!newFieldName || !newFieldCLUId || !isNewField}
                                         onClick={handleAddField}
                                     >
                                         Submit
                                     </Button>
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <Alert className={isNewField ? 'hidden' : ''} severity="warning">
+                                        This field is already in your list
+                                    </Alert>
                                 </Grid>
                             </Grid>
                         ) : null}
@@ -390,7 +415,7 @@ const Index = (): JSX.Element => {
                                 item
                                 container
                                 alignItems="center"
-                                onClick={() => handleCLUSelect(cluId)}
+                                onClick={() => handleCLUToggle(cluId)}
                             >
                                 <Grid item xs={1} />
                                 <Grid item xs={9} component={Typography} variant="body1">
@@ -471,7 +496,7 @@ const Index = (): JSX.Element => {
                                 className="fillContainer"
                                 projection="EPSG:4326"
                                 zoom={10}
-                                maxZoom={20}
+                                maxZoom={16}
                                 center={MAP_CENTER}
                                 layers={[
                                     basemapLayer,
