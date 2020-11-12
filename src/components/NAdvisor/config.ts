@@ -23,24 +23,33 @@ export const ROTATIONS = {
 export const N_FERTILIZER = [
     {
         label: 'Anhydrous Ammonia (82%)',
-        price: 512
+        price: 512,
+        conversion: 0.000609756
     },
     {
         label: 'UAN (28%)',
-        price: 840
+        price: 840,
+        conversion: 0.001785714
     },
     {
         label: 'UAN (32%)',
-        price: 860
+        price: 860,
+        conversion: 0.0015625
     },
     {
         label: 'UAN (45%)',
-        price: 920
+        price: 920,
+        conversion: 0.001111111
+    },
+    {
+        label: 'Ammonium Sulfate (21%)',
+        price: 266,
+        conversion: 0.002380952
     }
 ];
 
 export const initialInputs: NAdvisor.InputsType = {
-    district: 0,
+    district: '',
     rotation: 'cc',
     nFertilizer: 0,
     nPrice: N_FERTILIZER[0].price,
@@ -57,8 +66,8 @@ export const STYLES = {
             width: 1
         })
     }),
-    districts: (selectedDistrict: number) => (feature: FeatureType): Style => {
-        const districtId = parseInt(feature.get('id'), 10);
+    districts: (selectedDistrict: string) => (feature: FeatureType): Style => {
+        const districtId = feature.get('id');
         const isSelected = districtId === selectedDistrict;
         return new Style({
             fill: new Fill({
@@ -99,7 +108,7 @@ export const getCountiesLayer = (): VectorLayer =>
         style: STYLES.counties
     });
 
-export const getDistrictsLayer = (): VectorLayer => {
+const getDistrictsLayer = (): VectorLayer => {
     const districtsLayer = new VectorLayer({
         source: new VectorSource({
             url: districtsGeoJSON,
@@ -109,8 +118,10 @@ export const getDistrictsLayer = (): VectorLayer => {
                 featureProjection: 'EPSG:3857'
             })
         }),
-        style: STYLES.districts(0)
+        style: STYLES.districts('')
     });
     districtsLayer.set('interactive', true);
     return districtsLayer;
 };
+export const inputsDistrictsLayer = getDistrictsLayer();
+export const resultsDistrictsLayer = getDistrictsLayer();

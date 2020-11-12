@@ -5,7 +5,14 @@ import { LayoutStateContext } from '../Layouts/MainLayout';
 import Inputs from './Inputs';
 import Results from './Results';
 import { createDatawolfRequestBody, getResults } from './datawolf';
-import { datawolfConfig, initialInputs, N_FERTILIZER } from './config';
+import {
+    datawolfConfig,
+    initialInputs,
+    inputsDistrictsLayer,
+    resultsDistrictsLayer,
+    N_FERTILIZER,
+    STYLES
+} from './config';
 
 const inputsReducer = (
     state: NAdvisor.InputsType = initialInputs,
@@ -31,6 +38,15 @@ export const InputsContext = React.createContext<NAdvisor.InputsContextType>({} 
 const Index = (): JSX.Element => {
     const { layoutStateDispatch } = React.useContext(LayoutStateContext);
 
+    React.useEffect(
+        () => () => {
+            // Clean up the map on unmount
+            inputsDistrictsLayer.setStyle(STYLES.districts(''));
+            resultsDistrictsLayer.setStyle(STYLES.districts(''));
+        },
+        []
+    );
+
     const [inputs, inputsDispatch] = React.useReducer(inputsReducer, initialInputs);
 
     const areInputsValid = Object.entries(inputs).every(([k, v]) => (k === 'nFertilizer' ? v > -1 : v));
@@ -43,7 +59,13 @@ const Index = (): JSX.Element => {
         if (areInputsValid) {
             layoutStateDispatch({ type: 'isLoading', isLoading: true });
             axios
-                .post(`${datawolfConfig.url}/executions`, createDatawolfRequestBody(inputs))
+                .post(
+                    `${datawolfConfig.url}/executions`,
+                    createDatawolfRequestBody({
+                        ...inputs,
+                        nPrice: inputs.nPrice * N_FERTILIZER[inputs.nFertilizer].conversion
+                    })
+                )
                 .then(({ data: executionGUID }) => {
                     getResults(
                         executionGUID,

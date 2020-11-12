@@ -19,7 +19,7 @@ import Legend from '../Plots/Legend';
 import PlotBarChart from '../Plots/PlotBarChart';
 import PlotGrid from '../Plots/PlotGrid';
 import PlotLine from '../Plots/PlotLine';
-import { MAP_CENTER, N_FERTILIZER, ROTATIONS, STYLES, getBasemap, getDistrictsLayer } from './config';
+import { MAP_CENTER, N_FERTILIZER, ROTATIONS, STYLES, getBasemap, resultsDistrictsLayer } from './config';
 import { InputsContext } from './index';
 import PlotDots from '../Plots/PlotDots';
 
@@ -77,7 +77,6 @@ interface Props {
 }
 
 const basemapLayer = getBasemap();
-const districtsLayer = getDistrictsLayer();
 
 const Results = (props: Props): JSX.Element => {
     const classes = useStyle();
@@ -92,7 +91,7 @@ const Results = (props: Props): JSX.Element => {
     const legendContainerRef = React.useRef<HTMLDivElement>(null);
     const legendContainerRect = useElementRect(legendContainerRef);
 
-    districtsLayer.setStyle(STYLES.districts(inputs.district));
+    resultsDistrictsLayer.setStyle(STYLES.districts(inputs.district));
 
     const { results } = props;
     const xMin = results.xn[0];
@@ -301,7 +300,7 @@ const Results = (props: Props): JSX.Element => {
                                 className={classes.mapContainer}
                                 zoom={5}
                                 center={MAP_CENTER}
-                                layers={[basemapLayer, districtsLayer]}
+                                layers={[basemapLayer, resultsDistrictsLayer]}
                                 defaultControlsOptions={{ zoom: false }}
                             />
                             <Container>
@@ -384,7 +383,7 @@ const Results = (props: Props): JSX.Element => {
                                             component={Typography}
                                             variant="subtitle2"
                                         >
-                                            {inputs.nPrice} $/LB N
+                                            {inputs.nPrice} $/Ton
                                         </Grid>
                                     </Grid>
                                     <Grid container item>

@@ -18,7 +18,15 @@ import type { MapBrowserEvent } from 'ol';
 import type { FeatureLike as FeatureType } from 'ol/Feature';
 import type { Layer as LayerType, VectorTile as VectorTileType } from 'ol/layer';
 
-import { MAP_CENTER, N_FERTILIZER, ROTATIONS, STYLES, getBasemap, getCountiesLayer, getDistrictsLayer } from './config';
+import {
+    MAP_CENTER,
+    N_FERTILIZER,
+    ROTATIONS,
+    STYLES,
+    getBasemap,
+    getCountiesLayer,
+    inputsDistrictsLayer
+} from './config';
 
 import Map from '../Map';
 import { InputsContext } from './index';
@@ -100,7 +108,6 @@ interface Props {
 
 const basemapLayer = getBasemap();
 const countiesLayer = getCountiesLayer();
-const districtsLayer = getDistrictsLayer();
 
 const Inputs = (props: Props): JSX.Element => {
     const classes = useStyle();
@@ -112,20 +119,12 @@ const Inputs = (props: Props): JSX.Element => {
         current: inputs
     });
 
-    React.useEffect(
-        () => () => {
-            // Clean up the map on unmount
-            districtsLayer.setStyle(STYLES.districts(inputs.district));
-        },
-        []
-    );
-
     React.useEffect(() => {
         const previous = inputsRef.current.current;
 
         if (previous.district !== inputs.district) {
             // Update styling of districts
-            districtsLayer.setStyle(STYLES.districts(inputs.district));
+            inputsDistrictsLayer.setStyle(STYLES.districts(inputs.district));
         }
 
         inputsRef.current = {
@@ -149,7 +148,7 @@ const Inputs = (props: Props): JSX.Element => {
 
                 if (currentInputs.district !== clickedDistrict) {
                     // Select the new district
-                    inputsDispatch({ type: 'district', value: parseInt(clickedDistrict, 10) });
+                    inputsDispatch({ type: 'district', value: clickedDistrict });
                     (clickedLayer as VectorTileType).setStyle(STYLES.districts(clickedDistrict));
                 }
             }
@@ -203,12 +202,12 @@ const Inputs = (props: Props): JSX.Element => {
                                 onChange={({ target: { value } }) =>
                                     inputsDispatch({
                                         type: 'district',
-                                        value: (value || 0) as number
+                                        value: (value || '') as string
                                     })
                                 }
                             >
-                                <MenuItem value={0}>---</MenuItem>
-                                {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((district) => (
+                                <MenuItem value="">---</MenuItem>
+                                {['1', '2', '3', '4', '5', '6', '7', '8', '9'].map((district) => (
                                     <MenuItem key={district} value={district}>
                                         District {district}
                                     </MenuItem>
@@ -221,7 +220,7 @@ const Inputs = (props: Props): JSX.Element => {
                                 className="fillContainer"
                                 zoom={6.5}
                                 center={MAP_CENTER}
-                                layers={[basemapLayer, countiesLayer, districtsLayer]}
+                                layers={[basemapLayer, countiesLayer, inputsDistrictsLayer]}
                                 events={{ click: handleMapClick }}
                             />
                         </Container>
@@ -282,7 +281,7 @@ const Inputs = (props: Props): JSX.Element => {
 
                     <FormControl variant="outlined" fullWidth>
                         <Typography className={classes.inputLabel} variant="caption">
-                            Nitrogen Price ($/lb N)
+                            Nitrogen Price ($/Ton)
                         </Typography>
                         <TextField
                             type="number"
@@ -290,12 +289,7 @@ const Inputs = (props: Props): JSX.Element => {
                             variant="outlined"
                             size="small"
                             value={inputs.nPrice}
-                            onChange={({ target: { value } }) =>
-                                inputsDispatch({
-                                    type: 'nPrice',
-                                    value: parseFloat(value)
-                                })
-                            }
+                            disabled
                         />
                     </FormControl>
 

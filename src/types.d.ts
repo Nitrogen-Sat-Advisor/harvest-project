@@ -115,7 +115,7 @@ declare namespace NAdvisor {
 
     interface UpdateDistrictAction {
         type: 'district';
-        value: number;
+        value: string;
     }
 
     interface UpdateRotationAction {
@@ -146,7 +146,7 @@ declare namespace NAdvisor {
         | UpdateCornPriceAction;
 
     interface InputsType {
-        district: number;
+        district: string;
         rotation: 'cc' | 'cs';
         nFertilizer: number;
         nPrice: number;
