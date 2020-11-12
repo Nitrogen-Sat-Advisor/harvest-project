@@ -289,7 +289,12 @@ const Inputs = (props: Props): JSX.Element => {
                             variant="outlined"
                             size="small"
                             value={inputs.nPrice}
-                            disabled
+                            onChange={({ target: { value } }) =>
+                                inputsDispatch({
+                                    type: 'nPrice',
+                                    value: parseFloat(value)
+                                })
+                            }
                         />
                     </FormControl>
 
