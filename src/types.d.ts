@@ -128,6 +128,11 @@ declare namespace NAdvisor {
         value: number;
     }
 
+    interface UpdateNPriceTonAction {
+        type: 'nPriceTon';
+        value: number;
+    }
+
     interface UpdateNPriceAction {
         type: 'nPrice';
         value: number;
@@ -142,6 +147,7 @@ declare namespace NAdvisor {
         | UpdateDistrictAction
         | UpdateRotationAction
         | UpdateNFertilizerAction
+        | UpdateNPriceTonAction
         | UpdateNPriceAction
         | UpdateCornPriceAction;
 
@@ -150,6 +156,7 @@ declare namespace NAdvisor {
         rotation: 'cc' | 'cs';
         nFertilizer: number;
         nPrice: number;
+        nPriceTon: number;
         cornPrice: number;
     }
 

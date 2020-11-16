@@ -12,14 +12,22 @@ import Tabs from '@material-ui/core/Tabs';
 import Typography from '@material-ui/core/Typography';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
-import { precision } from '../../utils/format';
+import { precisionStr } from '../../utils/format';
 import { useElementRect } from '../../utils/hooks';
 import Map from '../Map';
 import Legend from '../Plots/Legend';
 import PlotBarChart from '../Plots/PlotBarChart';
 import PlotGrid from '../Plots/PlotGrid';
 import PlotLine from '../Plots/PlotLine';
-import { MAP_CENTER, N_FERTILIZER, ROTATIONS, STYLES, getBasemap, resultsDistrictsLayer } from './config';
+import {
+    MAP_CENTER,
+    N_FERTILIZER,
+    RESULTS_TEXTS,
+    ROTATIONS,
+    STYLES,
+    getBasemap,
+    resultsDistrictsLayer
+} from './config';
 import { InputsContext } from './index';
 import PlotDots from '../Plots/PlotDots';
 
@@ -65,9 +73,9 @@ const useStyle = makeStyles((theme) => ({
         height: '50%',
         padding: theme.spacing(2)
     },
-    legendContainer: {
+    helpTextContainer: {
         flexGrow: 1,
-        marginTop: theme.spacing(2)
+        marginTop: theme.spacing(3)
     }
 }));
 
@@ -383,7 +391,7 @@ const Results = (props: Props): JSX.Element => {
                                             component={Typography}
                                             variant="subtitle2"
                                         >
-                                            {inputs.nPrice} $/Ton
+                                            {inputs.nPrice} $/lb N ({inputs.nPriceTon} $/Ton)
                                         </Grid>
                                     </Grid>
                                     <Grid container item>
@@ -417,7 +425,7 @@ const Results = (props: Props): JSX.Element => {
                         <Typography variant="body1">PROFITABLE N RATE RANGE</Typography>
                         <Box display="flex" alignItems="center">
                             <Typography variant="h5">
-                                {precision(results.xn[results.Xmin], 2)} - {precision(results.xn[results.Xmax], 2)}
+                                {precisionStr(results.xn[results.Xmin], 2)}-{precisionStr(results.xn[results.Xmax], 2)}
                             </Typography>
                             <Typography variant="subtitle1">(lb N/acre)</Typography>
                         </Box>
@@ -444,7 +452,7 @@ const Results = (props: Props): JSX.Element => {
                                     component={Typography}
                                     variant="subtitle2"
                                 >
-                                    <b>{precision(results.MRTN_rate, 2)}</b>&nbsp;&nbsp;lb N/acre
+                                    <b>{precisionStr(results.MRTN_rate, 2)}</b>&nbsp;&nbsp;lb N/acre
                                 </Grid>
                             </Grid>
                             <Grid container item spacing={2}>
@@ -464,7 +472,7 @@ const Results = (props: Props): JSX.Element => {
                                     component={Typography}
                                     variant="subtitle2"
                                 >
-                                    <b>{precision(Math.max(...results.Yrtn), 2)}</b>&nbsp;&nbsp;$ N/acre
+                                    <b>{precisionStr(Math.max(...results.Yrtn), 2)}</b>&nbsp;&nbsp;$ N/acre
                                 </Grid>
                             </Grid>
                             <Grid container item spacing={2}>
@@ -584,7 +592,7 @@ const Results = (props: Props): JSX.Element => {
                         </Container>
                     ) : null}
                     {legends.length ? (
-                        <Container className={classes.legendContainer} ref={legendContainerRef}>
+                        <Container ref={legendContainerRef}>
                             <Legend
                                 width={(legendContainerRect.width || 0) * 0.5}
                                 itemHeight={13}
@@ -593,6 +601,9 @@ const Results = (props: Props): JSX.Element => {
                             />
                         </Container>
                     ) : null}
+                    <Container className={classes.helpTextContainer}>
+                        <Typography variant="body1">{RESULTS_TEXTS[activePlot]}</Typography>
+                    </Container>
                 </Box>
             </Grid>
         </Grid>

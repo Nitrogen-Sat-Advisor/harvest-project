@@ -1,6 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 
+import { precision } from '../../utils/format';
 import { LayoutStateContext } from '../Layouts/MainLayout';
 import Inputs from './Inputs';
 import Results from './Results';
@@ -23,7 +24,20 @@ const inputsReducer = (
             return {
                 ...state,
                 nFertilizer: action.value,
-                nPrice: N_FERTILIZER[action.value].price
+                nPriceTon: N_FERTILIZER[action.value].price,
+                nPrice: precision(N_FERTILIZER[action.value].price * N_FERTILIZER[action.value].conversion, 4)
+            };
+        case 'nPrice':
+            return {
+                ...state,
+                nPrice: action.value,
+                nPriceTon: action.value / N_FERTILIZER[state.nFertilizer].conversion
+            };
+        case 'nPriceTon':
+            return {
+                ...state,
+                nPrice: precision(action.value * N_FERTILIZER[state.nFertilizer].conversion, 4),
+                nPriceTon: action.value
             };
         default:
             return {
@@ -59,13 +73,7 @@ const Index = (): JSX.Element => {
         if (areInputsValid) {
             layoutStateDispatch({ type: 'isLoading', isLoading: true });
             axios
-                .post(
-                    `${datawolfConfig.url}/executions`,
-                    createDatawolfRequestBody({
-                        ...inputs,
-                        nPrice: inputs.nPrice * N_FERTILIZER[inputs.nFertilizer].conversion
-                    })
-                )
+                .post(`${datawolfConfig.url}/executions`, createDatawolfRequestBody(inputs))
                 .then(({ data: executionGUID }) => {
                     getResults(
                         executionGUID,

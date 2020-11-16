@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import Avatar from '@material-ui/core/Avatar';
+import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
@@ -13,6 +14,10 @@ import Typography from '@material-ui/core/Typography';
 import background from '../../images/background.jpg';
 import logoNAdvisor from '../../images/logo_n_advisor.png';
 import logoSatViewer from '../../images/logo_sat_viewer.png';
+import logoACES from '../../images/logo_aces.png';
+import logoNASA from '../../images/logo_nasa.png';
+import logoHarvest from '../../images/logo_harvest.png';
+import logoICGA from '../../images/logo_icga.png';
 import { headerHeight } from '../Layouts/MainLayout';
 import { palette } from '../../theme';
 
@@ -34,16 +39,22 @@ const useStyle = makeStyles((theme) => ({
         }
     },
     footerText: {
-        'maxWidth': 365,
-        'marginTop': 20,
+        'marginTop': theme.spacing(2),
         '& span': {
             lineHeight: '1rem'
+        },
+        '& a': {
+            color: theme.palette.secondary.light
         }
     },
     footerLogos: {
         '& > div': {
             margin: 10
         }
+    },
+    logo: {
+        height: theme.spacing(8),
+        marginRight: theme.spacing(1)
     },
     toolCardHeader: {
         flexDirection: 'column'
@@ -114,10 +125,10 @@ const Home: React.FC = () => {
                             titleTypographyProps={{ component: 'b', variant: 'h4', align: 'center' }}
                         />
                         <CardContent className={classes.toolContent}>
-                            iLorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean non leo consectetur,
-                            condimentum neque id, sodales nulla. Integer a lorem consectetur, efficitur justo in,
-                            malesuada est. Phasellus sed ex vel mauris luctus mattis. Aenean sed velit at leo porttitor
-                            fringilla.
+                            Here we provide multiple tools for nitrogen rate calculators for Illinois corn growers. As
+                            for now, we offer the classic MRTN tool to provide Maximum Return To Nitrogen rate (MRTN)
+                            and Most Profitable N Rate, based on recent N rate research data funded previously by
+                            Illinois Nutrient Research & Education Council. We plan to offer other tools here later.
                         </CardContent>
                         <CardActions className={classes.toolActions}>
                             <Button
@@ -151,10 +162,10 @@ const Home: React.FC = () => {
                             titleTypographyProps={{ component: 'b', variant: 'h4', align: 'center' }}
                         />
                         <CardContent className={classes.toolContent}>
-                            iLorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean non leo consectetur,
-                            condimentum neque id, sodales nulla. Integer a lorem consectetur, efficitur justo in,
-                            malesuada est. Phasellus sed ex vel mauris luctus mattis. Aenean sed velit at leo porttitor
-                            fringilla.
+                            This tool provides growers to view real-time fine-scale satellite datasets for their field.
+                            Users could select their fields, and the corresponding satellite images will be visualized
+                            at a given time period. The current tool provides the satellite STAIR fusion data for the
+                            green-chlorophyll-vegetation-index, with high value meaning better crop growth.
                         </CardContent>
                         <CardActions className={classes.toolActions}>
                             <Button
@@ -174,27 +185,38 @@ const Home: React.FC = () => {
 
             <Grid className={classes.footer} item xs={12} component="footer">
                 <Grid container item xs={12} justify="center" spacing={2}>
-                    <Grid className={classes.footerText} item xs={4}>
+                    <Grid item xs={1} />
+                    <Grid className={classes.footerText} item xs={5}>
                         <Typography variant="caption">
-                            iLorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean non leo consectetur,
-                            condimentum neque id, sodales nulla. Integer a lorem consectetur, efficitur justo in,
-                            malesuada est. Phasellus sed ex vel mauris luctus mattis. Aenean sed velit at leo porttitor
-                            fringilla.
+                            This project is funded as a seed project by NASA Harvest Program.&nbsp;
+                            <a href="http://faculty.nres.illinois.edu/~kaiyuguan/" target="_blank" rel="noreferrer">
+                                Dr. Kaiyu Guan’s research group
+                            </a>
+                            &nbsp;leads this effort. For the MRTN tool, we are working with Dr. Emerson Nafziger to
+                            provide the scientific foundation.&nbsp;
+                            <a href="http://www.ncsa.illinois.edu/enabling/software" target="_blank" rel="noreferrer">
+                                National Center for Supercomputing Applications (NCSA)
+                            </a>
+                            &nbsp;provides software development. Illinois Corn Growers Association provides outreach to
+                            Illinois growers. For any questions, please contact:&nbsp;
+                            <a href="mailto:ziyili5@illinois.edu">Ziyi Li</a>.
                         </Typography>
                     </Grid>
                     <Grid
                         className={classes.footerLogos}
                         container
                         item
-                        xs={4}
+                        xs={6}
                         justify="center"
                         alignItems="center"
                         alignContent="space-around"
                     >
-                        <Avatar />
-                        <Avatar />
-                        <Avatar />
-                        <Avatar />
+                        <Box display="flex">
+                            <img className={classes.logo} src={logoACES} alt="ACES logo" />
+                            <img className={classes.logo} src={logoNASA} alt="ACES logo" />
+                            <img className={classes.logo} src={logoHarvest} alt="ACES logo" />
+                            <img className={classes.logo} src={logoICGA} alt="ACES logo" />
+                        </Box>
                     </Grid>
                 </Grid>
             </Grid>

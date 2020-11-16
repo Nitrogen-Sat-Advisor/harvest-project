@@ -355,6 +355,12 @@ const Index = (): JSX.Element => {
                         <Grid item component={Typography} variant="h5">
                             Add Field
                         </Grid>
+                        <Grid item component={Typography} variant="body1">
+                            The Green Chlorophyll Vegetation Index (GCVI) is used to estimate the content of leaf
+                            chlorophyll in crops. The chlorophyll content reflects the physiological state of
+                            vegetation, largely related to the above ground biomass; it decreases in stressed plants and
+                            can therefore be used as a measurement of plant health.
+                        </Grid>
                         {isAddingCLU ? (
                             <Grid item container xs={12} spacing={1}>
                                 <Grid item xs={12} component={FormControl} variant="outlined" fullWidth>
@@ -443,7 +449,7 @@ const Index = (): JSX.Element => {
                     <Box className="fillContainer" display="flex" flexDirection="column">
                         <Typography variant="h4">
                             {userFields.find(({ clu: cluId }) => selectedCLU?.properties.clu_id === cluId)?.clu_name ||
-                                'Select a field'}
+                            'Select a field'}
                         </Typography>
 
                         <Grid className={classes.monthYearContainer} container>

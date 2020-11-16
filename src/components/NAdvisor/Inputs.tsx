@@ -68,6 +68,9 @@ const useStyle = makeStyles((theme) => ({
     introContainer: {
         '& > *': {
             padding: theme.spacing(2)
+        },
+        '& a': {
+            color: theme.palette.primary.dark
         }
     },
     intro: {
@@ -172,13 +175,25 @@ const Inputs = (props: Props): JSX.Element => {
                     </Box>
                     <Container>
                         <Typography className={classes.introTitle} variant="h5">
-                            What is Nitrogen Advisor?
+                            What is Nitrogen Rate Calculator?
                         </Typography>
-                        <Typography variant="body1">
-                            This tool calculates the economic return of N application with different nitrogen and corn
-                            prices and finds profitable N rates directly from recent N rate research data. The method
-                            used follows a regional approach for determining corn N rate guidelines that is implemented
-                            in several Corn Belt states.
+                        <Typography variant="body2">
+                            Here we provide the classic Maximum Return To Nitrogen rate (MRTN) tool for Illinois corn
+                            growers. The MRTN tool is to provide Maximum Return To N (largest net benefits) and Most
+                            Profitable N Rate, based on recent N rate research data funded previously by Illinois
+                            Nutrient Research & Education Council. Generally, MRTN gets the Most Profitable N Rate by
+                            finding the N rate leading to the largest net benefits, which are calculated by considering
+                            both the yield benefits and fertilizer cost. The yield benefits are estimated based on the
+                            nitrogen-yield response curve and the corn price. The MRTN approach is widely used in many
+                            Midwest states as the corn N rate guidelines.
+                        </Typography>
+                        <Typography variant="body2">
+                            This project is funded as a seed project by NASA Harvest Program. Dr. Kaiyu Guan’s research
+                            group leads this effort. For the MRTN tool, we are working with Dr. Emerson Nafziger to
+                            provide the scientific foundation. National Center for Supercomputing Applications (NCSA)
+                            provides software development. Illinois Corn Growers Association provides outreach to
+                            Illinois growers. For any questions, please contact&nbsp;
+                            <a href="mailto:ziyili5@illinois.edu">Ziyi Li</a>.
                         </Typography>
                     </Container>
                 </Box>
@@ -282,6 +297,25 @@ const Inputs = (props: Props): JSX.Element => {
                     <FormControl variant="outlined" fullWidth>
                         <Typography className={classes.inputLabel} variant="caption">
                             Nitrogen Price ($/Ton)
+                        </Typography>
+                        <TextField
+                            type="number"
+                            inputProps={{ min: 0 }}
+                            variant="outlined"
+                            size="small"
+                            value={inputs.nPriceTon}
+                            onChange={({ target: { value } }) =>
+                                inputsDispatch({
+                                    type: 'nPriceTon',
+                                    value: parseFloat(value)
+                                })
+                            }
+                        />
+                    </FormControl>
+
+                    <FormControl variant="outlined" fullWidth>
+                        <Typography className={classes.inputLabel} variant="caption">
+                            Nitrogen Price ($/ lb N)
                         </Typography>
                         <TextField
                             type="number"

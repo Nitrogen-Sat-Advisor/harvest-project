@@ -10,7 +10,7 @@ import type { FeatureLike as FeatureType } from 'ol/Feature';
 
 import countiesGeoJSON from '../../files/counties.geojson';
 import districtsGeoJSON from '../../files/districts.geojson';
-
+import { precision } from '../../utils/format';
 import DATAWOLF_CONFIG from './datawolf_config.json';
 
 export const datawolfConfig = DATAWOLF_CONFIG as NAdvisor.DatawolfWorkflowConfig;
@@ -52,7 +52,8 @@ export const initialInputs: NAdvisor.InputsType = {
     district: '',
     rotation: 'cc',
     nFertilizer: 0,
-    nPrice: N_FERTILIZER[0].price,
+    nPrice: precision(N_FERTILIZER[0].price * N_FERTILIZER[0].conversion, 4),
+    nPriceTon: N_FERTILIZER[0].price,
     cornPrice: 4.23
 };
 
@@ -125,3 +126,14 @@ const getDistrictsLayer = (): VectorLayer => {
 };
 export const inputsDistrictsLayer = getDistrictsLayer();
 export const resultsDistrictsLayer = getDistrictsLayer();
+
+export const RESULTS_TEXTS: { [k: string]: string } = {
+    return_to_n:
+        'The MRTN Rate (the x coordinate for the blue point; and the y coordinate for the blue point is the Net Return to N at MRTN Rate) provides the greatest Economic Optimal N Rate (EONR) , which will be the suggested N application rate. This figure demonstrates how MRTN Rate is calculated. Basically, the Net Return to N (blue line) for a selected region under one specific rotation pattern is derived by calculating the differences between gross return from yield increase (green line) and fertilizer cost (orange line). The profitable N rate range (yellow shaded symbol; within $1/acre of the maximum) is also shown on the figure. ',
+    percent_of_max_yield:
+        'This figure shows the percentage between each yield across all N rates and the maximum yield. The MRTN rate and the profitable N rate range (within $1/acre of the maximum) are also highlighted. As the N rates increase, the yield increases accordingly. The larger the price ratio (fertilizer price:crop price), the lower the economic rate, and the lower percentage of maximum yield for the MRTN rate.',
+    fonr:
+        'This figure shows the frequency distribution (in 25 lb N increments) of the EONR for all sites in one selected region under one specific rotation. Generally, the MRTN rate should be located in the ENOR range with the highest frequency.',
+    fonr_vs_yield:
+        'This figure shows the relationship between the ENOR and the corresponding yield for all experiments in one selected region under one specific rotation.'
+};
