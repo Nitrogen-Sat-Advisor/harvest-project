@@ -36,7 +36,7 @@ export const Header = (): JSX.Element => {
             </IconButton>
             <Avatar src={logoNAdvisor} variant="square" />
             <Typography className={`${classes.text} ${classes.title}`} variant="h6">
-                Nitrogen Advisor
+                Nitrogen Rate Calculator for Illinois
             </Typography>
             <Typography
                 className={`${classes.text} pointer`}

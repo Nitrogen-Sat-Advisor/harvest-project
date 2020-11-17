@@ -121,7 +121,7 @@ const Home: React.FC = () => {
                                     variant="square"
                                 />
                             }
-                            title="Nitrogen Advisor"
+                            title="Nitrogen Rate Calculator for Illinois"
                             titleTypographyProps={{ component: 'b', variant: 'h4', align: 'center' }}
                         />
                         <CardContent className={classes.toolContent}>
