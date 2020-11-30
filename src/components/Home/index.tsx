@@ -2,7 +2,6 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import Avatar from '@material-ui/core/Avatar';
-import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
@@ -14,53 +13,32 @@ import Typography from '@material-ui/core/Typography';
 import background from '../../images/background.jpg';
 import logoNAdvisor from '../../images/logo_n_advisor.png';
 import logoSatViewer from '../../images/logo_sat_viewer.png';
-import logoACES from '../../images/logo_aces.png';
-import logoNASA from '../../images/logo_nasa.png';
-import logoHarvest from '../../images/logo_harvest.png';
-import logoICGA from '../../images/logo_icga.png';
 import { headerHeight } from '../Layouts/MainLayout';
 import { palette } from '../../theme';
 
-const footerHeight = '120px';
+const footerHeight = 80;
 
 const useStyle = makeStyles((theme) => ({
     main: {
-        height: `calc(100vh - ${headerHeight} - ${footerHeight})`,
+        height: `calc(100vh - ${headerHeight}px - ${footerHeight}px)`,
         background: `linear-gradient(0deg, rgba(0,0,0,0.5) 0%, rgba(255,255,255,0.5) 100%), url(${background}) no-repeat center/cover`,
         margin: 0
     },
     footer: {
         'height': footerHeight,
         'background': palette.secondary.main,
+        'padding': theme.spacing(2),
         'color': '#fff',
-
-        '& h5': {
-            fontSize: '1.75rem'
-        }
-    },
-    footerText: {
-        'marginTop': theme.spacing(2),
-        '& span': {
-            lineHeight: '1rem'
-        },
         '& a': {
-            color: theme.palette.secondary.light
+            color: theme.palette.primary.main,
+            fontWeight: 500,
+            textDecoration: 'unset'
         }
-    },
-    footerLogos: {
-        '& > div': {
-            margin: 10
-        }
-    },
-    logo: {
-        height: theme.spacing(8),
-        marginRight: theme.spacing(1)
     },
     toolCardHeader: {
         flexDirection: 'column'
     },
     toolCard: {
-        maxWidth: 410,
         lineHeight: '1.5rem'
     },
     toolAvatar: {
@@ -79,7 +57,7 @@ const useStyle = makeStyles((theme) => ({
     },
     toolTitle: {
         fontWeight: 'bold',
-        fontSize: '2rem'
+        fontSize: '1.5rem'
     },
     toolContent: {
         background: theme.palette.primary.light,
@@ -93,7 +71,7 @@ const useStyle = makeStyles((theme) => ({
     }
 }));
 
-const Home: React.FC = () => {
+const Home = (): JSX.Element => {
     const classes = useStyle();
 
     return (
@@ -107,7 +85,7 @@ const Home: React.FC = () => {
                 alignContent="space-around"
                 spacing={5}
             >
-                <Grid item xs={4}>
+                <Grid item xs={4} sm={5}>
                     <Card classes={{ root: classes.toolCard }} square>
                         <CardHeader
                             classes={{
@@ -121,8 +99,8 @@ const Home: React.FC = () => {
                                     variant="square"
                                 />
                             }
-                            title="Nitrogen Rate Calculator for Illinois"
-                            titleTypographyProps={{ component: 'b', variant: 'h4', align: 'center' }}
+                            title="Nitrogen Rate Calculator"
+                            titleTypographyProps={{ component: 'b', variant: 'h5', align: 'center' }}
                         />
                         <CardContent className={classes.toolContent}>
                             Here we provide multiple tools for nitrogen rate calculators for Illinois corn growers. As
@@ -144,7 +122,7 @@ const Home: React.FC = () => {
                         </CardActions>
                     </Card>
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item xs={4} sm={5}>
                     <Card classes={{ root: classes.toolCard }} square>
                         <CardHeader
                             classes={{
@@ -159,7 +137,7 @@ const Home: React.FC = () => {
                                 />
                             }
                             title="Satellite Viewer"
-                            titleTypographyProps={{ component: 'b', variant: 'h4', align: 'center' }}
+                            titleTypographyProps={{ component: 'b', variant: 'h5', align: 'center' }}
                         />
                         <CardContent className={classes.toolContent}>
                             This tool provides growers to view real-time fine-scale satellite datasets for their field.
@@ -183,42 +161,19 @@ const Home: React.FC = () => {
                 </Grid>
             </Grid>
 
-            <Grid className={classes.footer} item xs={12} component="footer">
-                <Grid container item xs={12} justify="center" spacing={2}>
-                    <Grid item xs={1} />
-                    <Grid className={classes.footerText} item xs={5}>
-                        <Typography variant="caption">
-                            This project is funded as a seed project by NASA Harvest Program.&nbsp;
-                            <a href="http://faculty.nres.illinois.edu/~kaiyuguan/" target="_blank" rel="noreferrer">
-                                Dr. Kaiyu Guan’s research group
-                            </a>
-                            &nbsp;leads this effort. For the MRTN tool, we are working with Dr. Emerson Nafziger to
-                            provide the scientific foundation.&nbsp;
-                            <a href="http://www.ncsa.illinois.edu/enabling/software" target="_blank" rel="noreferrer">
-                                National Center for Supercomputing Applications (NCSA)
-                            </a>
-                            &nbsp;provides software development. Illinois Corn Growers Association provides outreach to
-                            Illinois growers. For any questions, please contact:&nbsp;
-                            <a href="mailto:ziyili5@illinois.edu">Ziyi Li</a>.
-                        </Typography>
-                    </Grid>
-                    <Grid
-                        className={classes.footerLogos}
-                        container
-                        item
-                        xs={6}
-                        justify="center"
-                        alignItems="center"
-                        alignContent="space-around"
-                    >
-                        <Box display="flex">
-                            <img className={classes.logo} src={logoACES} alt="ACES logo" />
-                            <img className={classes.logo} src={logoNASA} alt="ACES logo" />
-                            <img className={classes.logo} src={logoHarvest} alt="ACES logo" />
-                            <img className={classes.logo} src={logoICGA} alt="ACES logo" />
-                        </Box>
-                    </Grid>
-                </Grid>
+            <Grid className={classes.footer} item xs={12} component={Typography} variant="caption">
+                This project is funded as a seed project by NASA Harvest Program.&nbsp;
+                <a href="http://faculty.nres.illinois.edu/~kaiyuguan/" target="_blank" rel="noreferrer">
+                    Dr. Kaiyu Guan’s research group
+                </a>
+                &nbsp;leads this effort. For the MRTN tool, we are working with Dr. Emerson Nafziger to provide the
+                scientific foundation.&nbsp;
+                <a href="http://www.ncsa.illinois.edu/enabling/software" target="_blank" rel="noreferrer">
+                    National Center for Supercomputing Applications (NCSA)
+                </a>
+                &nbsp;provides software development. Illinois Corn Growers Association provides outreach to Illinois
+                growers. For any questions, please contact:&nbsp;
+                <a href="mailto:ziyili5@illinois.edu">Ziyi Li</a>.
             </Grid>
         </>
     );

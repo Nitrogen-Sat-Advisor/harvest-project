@@ -70,7 +70,9 @@ const useStyle = makeStyles((theme) => ({
             padding: theme.spacing(2)
         },
         '& a': {
-            color: theme.palette.primary.dark
+            color: theme.palette.primary.dark,
+            textDecoration: 'unset',
+            fontWeight: 500
         }
     },
     intro: {
@@ -79,6 +81,9 @@ const useStyle = makeStyles((theme) => ({
     introTitle: {
         color: theme.palette.primary.dark,
         marginBottom: theme.spacing(2)
+    },
+    introText: {
+        fontSize: '0.9rem'
     },
     mapContainer: {
         flexGrow: 1,
@@ -177,7 +182,7 @@ const Inputs = (props: Props): JSX.Element => {
                         <Typography className={classes.introTitle} variant="h5">
                             What is Nitrogen Rate Calculator?
                         </Typography>
-                        <Typography variant="body2">
+                        <Typography className={classes.introText} variant="body2">
                             Here we provide the classic Maximum Return To Nitrogen rate (MRTN) tool for Illinois corn
                             growers. The MRTN tool is to provide Maximum Return To N (largest net benefits) and Most
                             Profitable N Rate, based on recent N rate research data funded previously by Illinois
@@ -187,7 +192,7 @@ const Inputs = (props: Props): JSX.Element => {
                             nitrogen-yield response curve and the corn price. The MRTN approach is widely used in many
                             Midwest states as the corn N rate guidelines.
                         </Typography>
-                        <Typography variant="body2">
+                        <Typography className={classes.introText} variant="body2">
                             This project is funded as a seed project by NASA Harvest Program. Dr. Kaiyu Guan’s research
                             group leads this effort. For the MRTN tool, we are working with Dr. Emerson Nafziger to
                             provide the scientific foundation. National Center for Supercomputing Applications (NCSA)

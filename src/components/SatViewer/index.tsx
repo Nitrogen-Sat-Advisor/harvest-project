@@ -425,7 +425,7 @@ const Index = (): JSX.Element => {
                             >
                                 <Grid item xs={1} />
                                 <Grid item xs={9} component={Typography} variant="body1">
-                                    {cluName}
+                                    {cluName} ({cluId})
                                 </Grid>
                                 <Grid
                                     item
@@ -449,7 +449,7 @@ const Index = (): JSX.Element => {
                     <Box className="fillContainer" display="flex" flexDirection="column">
                         <Typography variant="h4">
                             {userFields.find(({ clu: cluId }) => selectedCLU?.properties.clu_id === cluId)?.clu_name ||
-                            'Select a field'}
+                                'Select a field'}
                         </Typography>
 
                         <Grid className={classes.monthYearContainer} container>
@@ -522,8 +522,8 @@ const Index = (): JSX.Element => {
                                     <div className={classes.legend} />
                                 </Container>
                                 <Box display="flex" justifyContent="space-between">
-                                    <Typography variant="body2">LESS</Typography>
-                                    <Typography variant="body2">MORE</Typography>
+                                    <Typography variant="body2">LESS (0)</Typography>
+                                    <Typography variant="body2">MORE (10)</Typography>
                                 </Box>
                             </Grid>
                             <Grid item xs={1} />

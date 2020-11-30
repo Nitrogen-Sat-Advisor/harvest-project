@@ -12,6 +12,7 @@ import HomeIcon from '@material-ui/icons/Home';
 import type { Theme } from '@material-ui/core/styles';
 
 import logoNAdvisor from '../../images/logo_n_advisor.png';
+import Logos from '../Logos';
 import About from './About';
 
 const useStyle = makeStyles((theme: Theme) => ({
@@ -19,7 +20,7 @@ const useStyle = makeStyles((theme: Theme) => ({
         fontWeight: 400,
         marginLeft: theme.spacing(1)
     },
-    title: {
+    logos: {
         flexGrow: 1
     }
 }));
@@ -35,9 +36,10 @@ export const Header = (): JSX.Element => {
                 <HomeIcon />
             </IconButton>
             <Avatar src={logoNAdvisor} variant="square" />
-            <Typography className={`${classes.text} ${classes.title}`} variant="h6">
-                Nitrogen Rate Calculator for Illinois
+            <Typography className={classes.text} variant="h6">
+                Nitrogen Rate Calculator
             </Typography>
+            <Logos containerClasses={classes.logos} />
             <Typography
                 className={`${classes.text} pointer`}
                 variant="h6"

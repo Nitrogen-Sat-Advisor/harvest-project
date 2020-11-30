@@ -5,8 +5,8 @@ import ListItem from '@material-ui/core/ListItem';
 import TextField from '@material-ui/core/TextField';
 import Alert from '@material-ui/lab/Alert';
 
-import { LayoutStateContext } from '../Layouts/MainLayout';
-import { USERS } from '../SatViewer/config';
+import { USERS } from './SatViewer/config';
+import { LayoutStateContext } from './Layouts/MainLayout';
 
 interface Props {
     handleClose: () => void;

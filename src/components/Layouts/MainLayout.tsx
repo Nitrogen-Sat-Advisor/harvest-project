@@ -6,7 +6,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Grid from '@material-ui/core/Grid';
 import Toolbar from '@material-ui/core/Toolbar';
 
-export const headerHeight = '75px';
+export const headerHeight = 75;
 
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
         'background': theme.palette.secondary.light,
         'color': theme.palette.secondary.contrastText,
         'textDecoration': 'none',
-
+        'paddingTop': theme.spacing(1),
         '& a': {
             margin: 5
         },
@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
     },
     main: {
         position: 'relative',
-        height: `calc(100vh - ${headerHeight})`
+        height: `calc(100vh - ${headerHeight}px)`
     }
 }));
 

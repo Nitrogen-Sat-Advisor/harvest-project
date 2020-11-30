@@ -17,6 +17,7 @@ import type { Theme } from '@material-ui/core/styles';
 import logoSatViewer from '../../images/logo_sat_viewer.png';
 import { LayoutStateContext } from '../Layouts/MainLayout';
 import Login from '../Login';
+import Logos from '../Logos';
 import About from './About';
 
 const useStyle = makeStyles((theme: Theme) => ({
@@ -25,7 +26,7 @@ const useStyle = makeStyles((theme: Theme) => ({
         marginLeft: theme.spacing(2),
         marginRight: `${theme.spacing(2)}px !important`
     },
-    title: {
+    logos: {
         flexGrow: 1
     },
     loginContainer: {
@@ -49,9 +50,10 @@ export const Header = (): JSX.Element => {
                 <HomeIcon />
             </IconButton>
             <Avatar src={logoSatViewer} variant="square" />
-            <Typography className={`${classes.text} ${classes.title}`} variant="h6">
+            <Typography className={classes.text} variant="h6">
                 Satellite Viewer
             </Typography>
+            <Logos containerClasses={classes.logos} />
             <Typography
                 className={`${classes.text} pointer`}
                 variant="h6"
