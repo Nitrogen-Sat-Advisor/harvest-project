@@ -3,10 +3,6 @@ import { Link } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
-import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
-import CardContent from '@material-ui/core/CardContent';
-import CardHeader from '@material-ui/core/CardHeader';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 
@@ -35,11 +31,8 @@ const useStyle = makeStyles((theme) => ({
             textDecoration: 'unset'
         }
     },
-    toolCardHeader: {
-        flexDirection: 'column'
-    },
     toolCard: {
-        lineHeight: '1.5rem'
+        background: '#fff'
     },
     toolAvatar: {
         'width': 107,
@@ -56,18 +49,14 @@ const useStyle = makeStyles((theme) => ({
         }
     },
     toolTitle: {
-        fontWeight: 'bold',
-        fontSize: '1.5rem'
+        textAlign: 'center'
     },
     toolContent: {
+        margin: '15px 25px',
         background: theme.palette.primary.light,
         color: theme.palette.secondary.main,
-        margin: '15px 25px'
-    },
-    toolActions: {
-        justifyContent: 'center',
-        padding: '8px 60px',
-        marginBottom: 20
+        textAlign: 'justify',
+        flexGrow: 1
     }
 }));
 
@@ -85,30 +74,25 @@ const Home = (): JSX.Element => {
                 alignContent="space-around"
                 spacing={5}
             >
-                <Grid item xs={4} sm={5}>
-                    <Card classes={{ root: classes.toolCard }} square>
-                        <CardHeader
-                            classes={{
-                                root: classes.toolCardHeader,
-                                title: classes.toolTitle
-                            }}
-                            avatar={
-                                <Avatar
-                                    className={`${classes.toolAvatar} n-advisor`}
-                                    src={logoNAdvisor}
-                                    variant="square"
-                                />
-                            }
-                            title="Nitrogen Rate Calculator"
-                            titleTypographyProps={{ component: 'b', variant: 'h5', align: 'center' }}
-                        />
-                        <CardContent className={classes.toolContent}>
-                            Here we provide multiple tools for nitrogen rate calculators for Illinois corn growers. As
-                            for now, we offer the classic MRTN tool to provide Maximum Return To Nitrogen rate (MRTN)
-                            and Most Profitable N Rate, based on recent N rate research data funded previously by
-                            Illinois Nutrient Research & Education Council. We plan to offer other tools here later.
-                        </CardContent>
-                        <CardActions className={classes.toolActions}>
+                <Grid container item xs={4}>
+                    <Grid
+                        className={classes.toolCard}
+                        container
+                        item
+                        xs={12}
+                        direction="column"
+                        alignItems="center"
+                        spacing={3}
+                    >
+                        <Grid item>
+                            <Avatar className={`${classes.toolAvatar} n-advisor`} src={logoNAdvisor} variant="square" />
+                        </Grid>
+                        <Grid className={classes.toolTitle} item>
+                            <Typography component="b" variant="h6">
+                                Nitrogen Rate Calculator
+                            </Typography>
+                        </Grid>
+                        <Grid item>
                             <Button
                                 component={Link}
                                 to="nitrogen-advisor"
@@ -119,36 +103,44 @@ const Home = (): JSX.Element => {
                             >
                                 Go To Tool
                             </Button>
-                        </CardActions>
-                    </Card>
+                        </Grid>
+                        <Grid className={classes.toolContent} item>
+                            <Typography variant="body1">
+                                Here we provide multiple tools for nitrogen rate calculators for Illinois corn growers.
+                                As for now, we offer the classic MRTN tool to provide Maximum Return To Nitrogen rate
+                                (MRTN) and Most Profitable N Rate, based on recent N rate research data funded
+                                previously by Illinois Nutrient Research & Education Council. We plan to offer other
+                                tools here later.
+                            </Typography>
+                        </Grid>
+                    </Grid>
                 </Grid>
-                <Grid item xs={4} sm={5}>
-                    <Card classes={{ root: classes.toolCard }} square>
-                        <CardHeader
-                            classes={{
-                                root: classes.toolCardHeader,
-                                title: classes.toolTitle
-                            }}
-                            avatar={
-                                <Avatar
-                                    className={`${classes.toolAvatar} sat-viewer`}
-                                    src={logoSatViewer}
-                                    variant="square"
-                                />
-                            }
-                            title="Satellite Viewer"
-                            titleTypographyProps={{ component: 'b', variant: 'h5', align: 'center' }}
-                        />
-                        <CardContent className={classes.toolContent}>
-                            This tool provides growers to view real-time fine-scale satellite datasets for their field.
-                            Users could select their fields, and the corresponding satellite images will be visualized
-                            at a given time period. The current tool provides the satellite STAIR fusion data for the
-                            green-chlorophyll-vegetation-index, with high value meaning better crop growth.
-                        </CardContent>
-                        <CardActions className={classes.toolActions}>
+                <Grid container item xs={4}>
+                    <Grid
+                        className={classes.toolCard}
+                        container
+                        item
+                        xs={12}
+                        direction="column"
+                        alignItems="center"
+                        spacing={3}
+                    >
+                        <Grid item>
+                            <Avatar
+                                className={`${classes.toolAvatar} n-advisor`}
+                                src={logoSatViewer}
+                                variant="square"
+                            />
+                        </Grid>
+                        <Grid className={classes.toolTitle} item>
+                            <Typography component="b" variant="h6">
+                                Satellite Viewer
+                            </Typography>
+                        </Grid>
+                        <Grid item>
                             <Button
                                 component={Link}
-                                to="satellite-viewer"
+                                to="nitrogen-advisor"
                                 variant="contained"
                                 color="primary"
                                 fullWidth
@@ -156,8 +148,17 @@ const Home = (): JSX.Element => {
                             >
                                 Go To Tool
                             </Button>
-                        </CardActions>
-                    </Card>
+                        </Grid>
+                        <Grid className={classes.toolContent} item>
+                            <Typography variant="body1">
+                                This tool provides growers to view real-time fine-scale satellite datasets for their
+                                field. Users could select their fields, and the corresponding satellite images will be
+                                visualized at a given time period. The current tool provides the satellite STAIR fusion
+                                data for the green-chlorophyll-vegetation-index, with high value meaning better crop
+                                growth.
+                            </Typography>
+                        </Grid>
+                    </Grid>
                 </Grid>
             </Grid>
 
