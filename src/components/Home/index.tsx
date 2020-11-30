@@ -140,7 +140,7 @@ const Home = (): JSX.Element => {
                         <Grid item>
                             <Button
                                 component={Link}
-                                to="nitrogen-advisor"
+                                to="satellite-viewer"
                                 variant="contained"
                                 color="primary"
                                 fullWidth
