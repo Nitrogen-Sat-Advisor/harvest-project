@@ -15,6 +15,7 @@ import HomeIcon from '@material-ui/icons/Home';
 import type { Theme } from '@material-ui/core/styles';
 
 import logoSatViewer from '../../images/logo_sat_viewer.png';
+import keycloak from '../../keycloak';
 import { LayoutStateContext } from '../Layouts/MainLayout';
 import Login from '../Login';
 import Logos from '../Logos';
@@ -62,6 +63,7 @@ export const Header = (): JSX.Element => {
             >
                 About
             </Typography>
+            <Button onClick={() => keycloak.login()}>KEYCLOACK</Button>
             {userId ? (
                 <Button
                     variant="contained"
