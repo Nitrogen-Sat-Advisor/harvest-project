@@ -156,6 +156,7 @@ const Index = (): JSX.Element => {
     const [opacity, setOpacity] = React.useState<number>(100);
 
     const [map, updateMap] = React.useState<OLMap>();
+    const mapRef = React.useRef<OLMap>();
 
     const isNewField = userFields.findIndex(({ clu: cluId }) => cluId === newFieldCLUId) === -1;
 
@@ -163,6 +164,8 @@ const Index = (): JSX.Element => {
         () => () => {
             // Clean up the map on unmount
             cropFeature.getGeometry().setCoordinates([]);
+            mapRef.current?.removeLayer(basemapLayer);
+            mapRef.current?.removeLayer(cluLayer);
         },
         []
     );
@@ -511,7 +514,10 @@ const Index = (): JSX.Element => {
                                     selectedFieldBoundary,
                                     selectedFieldMarker
                                 ]}
-                                updateMap={updateMap}
+                                updateMap={(m) => {
+                                    updateMap(m);
+                                    mapRef.current = m;
+                                }}
                                 events={{ click: handleMapClick }}
                             />
                         </Grid>

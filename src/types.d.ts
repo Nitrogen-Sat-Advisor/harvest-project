@@ -170,6 +170,7 @@ declare namespace NAdvisor {
         En: number[];
         Opy: number[];
         MRTN_rate: number;
+        PMY: number;
         Ns: number;
         xn: number[];
         Yc: number[];

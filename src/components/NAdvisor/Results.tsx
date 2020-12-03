@@ -12,7 +12,7 @@ import Tabs from '@material-ui/core/Tabs';
 import Typography from '@material-ui/core/Typography';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
-import { precisionStr } from '../../utils/format';
+import { precision, precisionStr } from '../../utils/format';
 import { useElementRect } from '../../utils/hooks';
 import Map from '../Map';
 import Legend from '../Plots/Legend';
@@ -492,7 +492,7 @@ const Results = (props: Props): JSX.Element => {
                                     component={Typography}
                                     variant="subtitle2"
                                 >
-                                    <b>89%</b>
+                                    <b>{precision(results.PMY * 100)}%</b>
                                 </Grid>
                             </Grid>
                             <Grid container item spacing={2}>
