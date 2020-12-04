@@ -503,7 +503,7 @@ const Results = (props: Props): JSX.Element => {
                                     component={Typography}
                                     variant="subtitle2"
                                 >
-                                    Anhydrous Ammonia (82%) at MRTN Rate
+                                    {N_FERTILIZER[inputs.nFertilizer].label} at MRTN Rate
                                 </Grid>
                                 <Grid
                                     className={classes.columnValue}
@@ -512,7 +512,7 @@ const Results = (props: Props): JSX.Element => {
                                     component={Typography}
                                     variant="subtitle2"
                                 >
-                                    <b>1</b>&nbsp;&nbsp;lb product/acre
+                                    <b>{precision(results.FM, 2)}</b>&nbsp;&nbsp;lb product/acre
                                 </Grid>
                             </Grid>
                             <Grid container item spacing={2}>
@@ -523,7 +523,7 @@ const Results = (props: Props): JSX.Element => {
                                     component={Typography}
                                     variant="subtitle2"
                                 >
-                                    Anhydrous Ammonia (82%) Cost at MRTN Rate
+                                    {N_FERTILIZER[inputs.nFertilizer].label} Cost at MRTN Rate
                                 </Grid>
                                 <Grid
                                     className={classes.columnValue}
@@ -532,7 +532,7 @@ const Results = (props: Props): JSX.Element => {
                                     component={Typography}
                                     variant="subtitle2"
                                 >
-                                    <b>1</b>&nbsp;&nbsp;$/acre
+                                    <b>{precision(results.FC, 2)}</b>&nbsp;&nbsp;$/acre
                                 </Grid>
                             </Grid>
                         </Grid>
